@@ -143,3 +143,23 @@ export function normalizeConditionIds(values: string[] | undefined) {
     .filter((profile) => values?.includes(profile.id) || values?.includes(profile.label))
     .map((profile) => profile.id);
 }
+
+export function selectedConditionProfiles(values: string[] | undefined) {
+  const ids = normalizeConditionIds(values);
+  return conditionProfiles.filter((profile) => ids.includes(profile.id));
+}
+
+/** "OCD", "OCD and anxiety", or "OCD, anxiety, and depression". Empty when nothing is selected. */
+export function formatConditionList(labels: string[]) {
+  if (labels.length === 0) return "";
+  if (labels.length === 1) return labels[0];
+  if (labels.length === 2) return `${labels[0]} and ${labels[1]}`;
+  return `${labels.slice(0, -1).join(", ")}, and ${labels[labels.length - 1]}`;
+}
+
+/** Names for one or two conditions; a short stand-in once the list gets long. */
+export function conditionHeading(labels: string[], generic: string) {
+  if (labels.length === 0) return generic;
+  if (labels.length <= 2) return formatConditionList(labels);
+  return "your conditions";
+}

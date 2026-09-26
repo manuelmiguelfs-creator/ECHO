@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type MouseEvent } from "react";
-import { ArrowRight, BookOpen, CheckCircle2, CircleHelp, Heart, ShieldCheck, Siren, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle2, CircleHelp, ShieldCheck, Siren, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { LogoMark } from "@/components/logo-mark";
 import { categoryMeta, solutions, type Category } from "@/lib/solutions";
-import { testimonials } from "@/lib/testimonials";
-import { useApp } from "@/components/app-provider";
-import { MeetingCard } from "@/components/meeting-card";
-import { conditionProfiles, normalizeConditionIds } from "@/lib/conditions";
+import { PersonPhoto } from "@/components/learn/person-photo";
+import { learnLibrary } from "@/lib/learn";
+import { useApp, type QuizData } from "@/components/app-provider";
+import { conditionHeading, conditionProfiles, formatConditionList, normalizeConditionIds } from "@/lib/conditions";
 
 const faqs = [
   ["How can I help your community?", "Submit a personal strategy through our community page. Every contribution is reviewed before it can appear publicly."],
@@ -30,11 +31,35 @@ export function HomeContent() {
     .slice(0, 3);
   const selectedProfiles = conditionProfiles.filter((profile) => selectedIds.includes(profile.id));
   const selectedConditionKey = selectedIds.join(",");
-  const selectedNames = selectedProfiles.map((profile) => profile.label).join(", ");
-  const hasQuiz = Boolean(quiz?.conditions?.length);
+  const selectedLabels = selectedProfiles.map((profile) => profile.label);
+  const selectedNames = formatConditionList(selectedLabels);
+  const hasQuiz = selectedLabels.length > 0;
+  const primaryConditionId = selectedIds[0];
   const focusText = selectedNames || "how Echo works";
+  const learnLabel = hasQuiz ? `Learn about ${conditionHeading(selectedLabels, "your conditions")}` : "Understand your conditions";
   const emergencySolution = getEmergencySolution(quiz, selectedConditionKey);
   const emergencyHref = emergencySolution ? `/solutions/${emergencySolution.id}` : "/help-now";
+
+  const homeTestimonials = (() => {
+    const activeEntries = selectedIds
+      .map((id) => learnLibrary[id])
+      .filter((entry) => entry != null);
+
+    const cards: { person: typeof activeEntries[0]["testimonials"][number]; condition: typeof activeEntries[0] }[] = [];
+    let index = 0;
+    while (cards.length < 3) {
+      let addedAny = false;
+      for (const entry of activeEntries) {
+        if (entry.testimonials[index] && cards.length < 3) {
+          cards.push({ person: entry.testimonials[index], condition: entry });
+          addedAny = true;
+        }
+      }
+      if (!addedAny) break;
+      index++;
+    }
+    return cards;
+  })();
 
   function openRandomActivity(event: MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
@@ -64,13 +89,8 @@ export function HomeContent() {
               <Link href="/quiz">Start with the quiz <ArrowRight /></Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="h-13 rounded-full border-ink/20 bg-white/70 px-7 text-base">
-              <Link href="/learn">Understand your conditions</Link>
+              <Link href="/learn">{learnLabel}</Link>
             </Button>
-            {hasQuiz && (
-              <Button asChild variant="outline" size="lg" className="h-13 rounded-full border-ink/20 bg-white/70 px-7 text-base">
-                <Link href="/what-is-ocd">Understand your conditions</Link>
-              </Button>
-            )}
           </div>
           <p className="mt-6 flex items-center gap-2 text-sm text-ink/55">
             <ShieldCheck className="size-4 text-sage" /> Private by default. Educational, never diagnostic.
@@ -86,7 +106,7 @@ export function HomeContent() {
             <p className="mt-3 text-xs font-bold uppercase tracking-widest text-ink/45">A small reminder from Echo</p>
           </div>
           <Sparkles className="absolute right-[4%] top-[9%] size-12 text-ochre" />
-          <Heart className="absolute bottom-[9%] left-[6%] size-14 -rotate-12 fill-terracotta-light text-terracotta" />
+          <LogoMark className="absolute bottom-[9%] left-[6%] size-16 -rotate-12 drop-shadow-[0_12px_24px_rgba(41,50,45,0.16)]" />
         </div>
       </section>
 
@@ -210,7 +230,7 @@ export function HomeContent() {
         <div className="text-center">
           <p className="eyebrow">💡 Solution library</p>
           <h2 className="mt-3 font-display text-5xl font-semibold">Find an activity that fits this moment</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-ink/60">Browse 22 supportive activities for moments of anxiety or compulsion. The library is designed to be reviewed and updated.</p>
+          <p className="mx-auto mt-4 max-w-2xl text-ink/60">Browse 22 supportive activities for moments related to {selectedNames}. The library is designed to be reviewed and updated.</p>
         </div>
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {Object.entries(categoryMeta).map(([key, category]) => (
@@ -259,14 +279,40 @@ export function HomeContent() {
 
       <section className="section-space page-shell">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div><p className="eyebrow">⭐ Public profiles</p><h2 className="mt-3 font-display text-5xl font-semibold">Speaking openly matters.</h2></div>
-          <Button asChild variant="outline" className="rounded-full bg-transparent"><Link href="/testimonials">See all profiles <ArrowRight /></Link></Button>
+          <div>
+            <p className="eyebrow">⭐ Testimonials</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">
+              {hasQuiz ? `People who shared similar experiences` : "Speaking openly matters"}
+            </h2>
+            <p className="mt-3 max-w-2xl text-ink/65">
+              {hasQuiz
+                ? `Well-known figures who have spoken publicly about ${selectedNames}.`
+                : "Discover real experiences from public figures who have spoken openly about mental health."}
+            </p>
+          </div>
+          <Button asChild variant="outline" className="rounded-full bg-transparent shrink-0">
+            <Link href={primaryConditionId ? `/learn?condition=${primaryConditionId}#testimonials` : "/learn"}>
+              Read stories in Learn <ArrowRight className="size-4 ml-1" />
+            </Link>
+          </Button>
         </div>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {testimonials.filter((item) => item.featured).map((person) => (
-            <article key={person.id} className="overflow-hidden rounded-[1.75rem] bg-paper shadow-sm">
-              <div className={`grid aspect-[4/3] place-items-center ${person.color}`}><span className="font-display text-6xl font-semibold text-ink/50">{person.initials}</span></div>
-              <div className="p-6"><p className="text-xs font-bold uppercase tracking-widest text-terracotta">Public profile</p><h3 className="mt-2 font-display text-2xl font-semibold">{person.displayName}</h3><p className="mt-3 line-clamp-2 text-sm leading-6 text-ink/60">{person.bio}</p></div>
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {homeTestimonials.map(({ person, condition }) => (
+            <article key={`${condition.id}-${person.name}`} className="flex flex-col overflow-hidden rounded-[1.75rem] bg-paper shadow-sm">
+              <PersonPhoto src={person.photo.src} name={person.name} className="aspect-square w-full" />
+              <div className="flex flex-1 flex-col p-6">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-bold uppercase tracking-widest text-terracotta">{person.knownFor}</span>
+                  <span className="rounded-full bg-cream px-2.5 py-0.5 text-[11px] font-semibold text-ink/60">{condition.shortName}</span>
+                </div>
+                <h3 className="mt-2 font-display text-2xl font-semibold">{person.name}</h3>
+                <p className="mt-3 flex-1 text-sm leading-6 text-ink/65 line-clamp-3">{person.story}</p>
+                <div className="mt-5 border-t border-ink/10 pt-4 text-xs">
+                  <Link href={`/learn?condition=${condition.id}#testimonials`} className="inline-flex items-center gap-1 font-bold text-terracotta hover:underline">
+                    Read in Learn guide <ArrowRight className="size-3.5" />
+                  </Link>
+                </div>
+              </div>
             </article>
           ))}
         </div>
@@ -275,8 +321,8 @@ export function HomeContent() {
       <section className="page-shell pb-24">
         <div className="grid overflow-hidden rounded-[2.5rem] bg-ochre-light lg:grid-cols-2">
           <div className="p-8 sm:p-14">
-            <BookOpen className="size-10 text-terracotta" /><h2 className="mt-6 font-display text-4xl font-semibold">Your private compulsion journal</h2>
-            <p className="mt-4 max-w-lg leading-7 text-ink/65">Notice dates, emotions, and activities without turning patterns into a diagnosis. Entries stay in this browser unless you export them.</p>
+            <BookOpen className="size-10 text-terracotta" /><h2 className="mt-6 font-display text-4xl font-semibold">{selectedLabels.length <= 2 ? `Your private ${selectedNames} journal` : "Your private journal"}</h2>
+            <p className="mt-4 max-w-lg leading-7 text-ink/65">Notice dates, emotions, and activities around {selectedNames} without turning patterns into a diagnosis. Entries stay in this browser unless you export them.</p>
             <div className="mt-8 flex flex-wrap gap-3"><Button asChild className="rounded-full bg-ink text-white"><Link href="/journal">Open journal</Link></Button><Button asChild variant="outline" className="rounded-full bg-white/50"><Link href="/journal?new=true">Add entry</Link></Button></div>
           </div>
           <div className="grid place-items-center bg-paper/50 p-8">

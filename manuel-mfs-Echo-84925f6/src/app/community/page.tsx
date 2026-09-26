@@ -8,12 +8,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useApp } from "@/components/app-provider";
+import { formatConditionList, selectedConditionProfiles } from "@/lib/conditions";
 
-const sources = ["Official OCD resource", "Reddit or online comments", "I created and tested it", "Other"];
 const categories = ["Outside Activity", "Inside Activity", "Mental Exercise"];
 
 export default function CommunityPage() {
-  const { addSubmission } = useApp();
+  const { quiz, addSubmission } = useApp();
+  const labels = selectedConditionProfiles(quiz?.conditions).map((profile) => profile.label);
+  const conditionList = formatConditionList(labels);
+  const sources = [
+    labels.length === 0 || labels.length > 2 ? "Official health resource" : `Official ${conditionList} resource`,
+    "Reddit or online comments",
+    "I created and tested it",
+    "Other",
+  ];
   const [success, setSuccess] = useState(false);
   const [form, setForm] = useState({ fullName: "", ageRange: "", email: "", source: [] as string[], category: [] as string[], solutionName: "", description: "" });
 

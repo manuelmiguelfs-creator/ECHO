@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/what-is-ocd", destination: "/learn", permanent: true },
       { source: "/learn/:condition", destination: "/learn?condition=:condition", permanent: true },
+      { source: "/testimonials", destination: "/learn#testimonials", permanent: true },
     ];
   },
 };

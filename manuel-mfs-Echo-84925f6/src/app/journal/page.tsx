@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useApp, type JournalEntry } from "@/components/app-provider";
 import { categoryMeta, solutions, type Category } from "@/lib/solutions";
+import { formatConditionList, selectedConditionProfiles } from "@/lib/conditions";
 
 const emotions = ["Guilt", "Relief (brief)", "Confusion", "Anxiety", "Frustration", "Sadness", "Fear", "Anger", "Tiredness", "Loneliness"];
 const emptyForm = { date: "", description: "", emotions: [] as string[], activities: [] as string[], notes: "", completed: false };
@@ -17,7 +18,18 @@ const emptyForm = { date: "", description: "", emotions: [] as string[], activit
 export default function JournalPage() {
   const params = useSearchParams();
   const initialActivity = params.get("activity");
-  const { journal, addJournalEntry, updateJournalEntry, deleteJournalEntry } = useApp();
+  const { quiz, journal, addJournalEntry, updateJournalEntry, deleteJournalEntry } = useApp();
+  const labels = selectedConditionProfiles(quiz?.conditions).map((profile) => profile.label);
+  const conditionList = formatConditionList(labels);
+  const journalTitle = labels.length === 0 || labels.length > 2 ? "Your journal" : `Your ${conditionList} journal`;
+  const journalDescription = conditionList
+    ? `Record moments related to ${conditionList}, what you felt, and what you tried. Patterns can support reflection, but they are not diagnoses.`
+    : "Record what happened, what you felt, and what you tried. Patterns can support reflection, but they are not diagnoses.";
+  const momentPrompt = labels.length === 1
+    ? `Write a little about this ${labels[0]} moment`
+    : conditionList
+      ? `Write a little about this moment with ${conditionList}`
+      : "Write a little about what happened";
   const [open, setOpen] = useState(params.get("new") === "true" || !!initialActivity);
   const [editing, setEditing] = useState<string | null>(null);
   const [form, setForm] = useState({ ...emptyForm, activities: initialActivity ? [initialActivity] : [] });
@@ -75,7 +87,7 @@ export default function JournalPage() {
             <div className="flex items-center justify-between"><h2 className="font-display text-3xl font-semibold">{editing ? "Edit entry" : "New journal entry"}</h2><Button type="button" variant="ghost" size="icon" aria-label="Close form" onClick={() => setOpen(false)}><X /></Button></div>
             <div className="mt-7 grid gap-6 sm:grid-cols-2">
               <label className="text-sm font-semibold">Day<Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="mt-2 h-12 bg-white" /></label>
-              <label className="text-sm font-semibold sm:col-span-2">Write a little about the compulsion<Textarea required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="mt-2 min-h-28 bg-white" /></label>
+              <label className="text-sm font-semibold sm:col-span-2">{momentPrompt}<Textarea required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="mt-2 min-h-28 bg-white" /></label>
             </div>
             <fieldset className="mt-7"><legend className="font-semibold">Emotions</legend><div className="mt-3 flex flex-wrap gap-2">{emotions.map((emotion) => <ChoicePill key={emotion} checked={form.emotions.includes(emotion)} label={emotion} onChange={() => toggle("emotions", emotion)} />)}</div></fieldset>
             <fieldset className="mt-7"><legend className="font-semibold">What did you do to respond?</legend><div className="mt-3 max-h-72 space-y-6 overflow-y-auto rounded-2xl bg-cream p-4">{(["Outside", "Inside", "Mental"] as Category[]).map((category) => <div key={category}><p className="mb-2 text-xs font-bold uppercase tracking-wider text-ink/50">{categoryMeta[category].emoji} {category}</p><div className="grid gap-2 sm:grid-cols-2">{solutions.filter((solution) => solution.category === category).map((solution) => <label key={solution.id} className="flex gap-2 rounded-lg bg-white p-3 text-sm"><input type="checkbox" className="accent-terracotta" checked={form.activities.includes(solution.id)} onChange={() => toggle("activities", solution.id)} />{solution.name}</label>)}</div></div>)}</div></fieldset>
