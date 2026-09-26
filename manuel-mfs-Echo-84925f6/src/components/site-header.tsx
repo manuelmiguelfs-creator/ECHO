@@ -5,9 +5,10 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { HeartHandshake, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useApp } from "@/components/app-provider";
 
 const links = [
-  { href: "/what-is-ocd", label: "Learn" },
+  { href: "/learn", label: "Learn" },
   { href: "/solutions", label: "Solutions" },
   { href: "/journal", label: "Journal" },
   { href: "/meet", label: "Meet" },
@@ -17,7 +18,10 @@ const links = [
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const { quiz } = useApp();
   const [open, setOpen] = useState(false);
+  const hasQuiz = Boolean(quiz?.conditions?.length);
+  const visibleLinks = hasQuiz ? links : [];
 
   return (
     <header className="sticky top-0 z-50 border-b border-ink/10 bg-cream">
@@ -35,7 +39,7 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
-          {links.map((link) => (
+          {visibleLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -79,7 +83,7 @@ export function SiteHeader() {
       {open && (
         <nav className="border-t border-ink/10 bg-cream px-5 py-5 lg:hidden" aria-label="Mobile navigation">
           <div className="mx-auto grid max-w-7xl gap-1">
-            {links.map((link) => (
+            {visibleLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}

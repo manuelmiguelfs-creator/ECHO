@@ -43,7 +43,7 @@ export default function HelpNowPage() {
         <div className="grid gap-5 lg:grid-cols-[1fr_auto]">
           <div className="rounded-2xl bg-paper p-6">
             {selectedProfiles.length ? (
-              <><p className="font-semibold">Support suggestions for {selectedProfiles.map((profile) => profile.label).join(", ")}.</p><p className="mt-2 text-sm leading-6 text-ink/60">Echo will highlight {suggestedCategories.map((category) => categoryMeta[category].label.toLowerCase()).join(" and ")} activities while keeping every activity available to you.</p><Link href="/what-is-ocd" className="mt-3 inline-block text-sm font-bold text-terracotta">Read about your conditions →</Link></>
+              <><p className="font-semibold">Support suggestions for {selectedProfiles.map((profile) => profile.label).join(", ")}.</p><p className="mt-2 text-sm leading-6 text-ink/60">Echo will highlight {suggestedCategories.map((category) => categoryMeta[category].label.toLowerCase()).join(" and ")} activities while keeping every activity available to you.</p><Link href="/learn" className="mt-3 inline-block text-sm font-bold text-terracotta">Read about your conditions →</Link></>
             ) : scores ? (
               <><p className="font-semibold">Your recommendations are active.</p><p className="mt-2 text-sm leading-6 text-ink/60">The Recommendation label uses the score for each activity’s category. You can update or repeat the quiz at any time and still choose any activity.</p><Link href="/quiz" className="mt-3 inline-block text-sm font-bold text-terracotta">Update quiz answers →</Link></>
             ) : (
