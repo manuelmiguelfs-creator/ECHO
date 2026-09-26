@@ -45,7 +45,7 @@ export function HomeContent() {
               <Link href="/quiz">Start with the quiz <ArrowRight /></Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="h-13 rounded-full border-ink/20 bg-white/70 px-7 text-base">
-              <Link href="/what-is-ocd">Understand your conditions</Link>
+              <Link href="/learn">Understand your conditions</Link>
             </Button>
           </div>
           <p className="mt-6 flex items-center gap-2 text-sm text-ink/55">
@@ -73,7 +73,7 @@ export function HomeContent() {
             <h2 className="mt-3 font-display text-4xl font-semibold">A clearer starting point for {selectedNames}</h2>
             <div className="mt-7 grid gap-4 md:grid-cols-2">
               {selectedProfiles.map((profile) => (
-                <Link key={profile.id} href={`/what-is-ocd#${profile.id}`} className="rounded-2xl bg-paper p-6 transition hover:-translate-y-1 hover:shadow-lg">
+                <Link key={profile.id} href={`/learn?condition=${profile.id}`} className="rounded-2xl bg-paper p-6 transition hover:-translate-y-1 hover:shadow-lg">
                   <h3 className="font-display text-2xl font-semibold">{profile.label}</h3>
                   <p className="mt-3 text-sm leading-6 text-ink/65">{profile.summary}</p>
                   <span className="mt-5 flex items-center gap-2 text-sm font-bold text-terracotta">Read about {profile.label} <ArrowRight className="size-4" /></span>

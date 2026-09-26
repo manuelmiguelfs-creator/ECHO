@@ -46,7 +46,7 @@ export default function FaqPage() {
           </div>
         </section>
       </div>
-      <div className="page-shell pb-20 text-center"><div className="rounded-[2rem] bg-sage-light p-8"><h2 className="font-display text-3xl font-semibold">Still unsure?</h2><p className="mx-auto mt-3 max-w-xl text-ink/60">For personal symptoms or treatment questions, a qualified mental health professional is the right person to ask.</p><Button asChild className="mt-5 rounded-full bg-ink text-white"><Link href="/what-is-ocd#ocd">Open trusted resources</Link></Button></div></div>
+      <div className="page-shell pb-20 text-center"><div className="rounded-[2rem] bg-sage-light p-8"><h2 className="font-display text-3xl font-semibold">Still unsure?</h2><p className="mx-auto mt-3 max-w-xl text-ink/60">For personal symptoms or treatment questions, a qualified mental health professional is the right person to ask.</p><Button asChild className="mt-5 rounded-full bg-ink text-white"><Link href="/learn#resources">Open trusted resources</Link></Button></div></div>
     </>
   );
 }

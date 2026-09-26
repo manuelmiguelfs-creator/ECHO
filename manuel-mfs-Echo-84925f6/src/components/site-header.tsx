@@ -7,7 +7,7 @@ import { HeartHandshake, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const links = [
-  { href: "/what-is-ocd", label: "Learn" },
+  { href: "/learn", label: "Learn" },
   { href: "/solutions", label: "Solutions" },
   { href: "/journal", label: "Journal" },
   { href: "/community", label: "Community" },
