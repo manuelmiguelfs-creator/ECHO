@@ -24,6 +24,7 @@ const faqs = [
 ];
 
 export function HomeContent() {
+  const router = useRouter();
   const { quiz, meetings } = useApp();
   const selectedIds = normalizeConditionIds(quiz?.conditions);
   const upcomingMeetings = meetings
