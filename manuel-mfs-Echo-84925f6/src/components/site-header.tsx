@@ -15,6 +15,7 @@ const links = [
   { href: "/journal", label: "Journal" },
   { href: "/meet", label: "Meet" },
   { href: "/community", label: "Community" },
+  { href: "/talk", label: "Talk" },
   { href: "/about", label: "About" },
 ];
 

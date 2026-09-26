@@ -23,6 +23,7 @@ const faqs = [
 ];
 
 export function HomeContent() {
+  const router = useRouter();
   const { quiz, meetings } = useApp();
   const router = useRouter();
   const selectedIds = normalizeConditionIds(quiz?.conditions);
