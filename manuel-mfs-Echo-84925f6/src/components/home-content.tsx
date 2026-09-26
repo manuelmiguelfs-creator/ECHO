@@ -7,6 +7,7 @@ import { ArrowRight, BookOpen, CheckCircle2, CircleHelp, ShieldCheck, Siren, Spa
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { LogoMark } from "@/components/logo-mark";
+import { MeetingCard } from "@/components/meeting-card";
 import { categoryMeta, solutions, type Category } from "@/lib/solutions";
 import { PersonPhoto } from "@/components/learn/person-photo";
 import { learnLibrary } from "@/lib/learn";
