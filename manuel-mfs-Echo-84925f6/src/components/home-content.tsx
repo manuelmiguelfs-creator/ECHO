@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type MouseEvent } from "react";
-import { ArrowRight, BookOpen, CheckCircle2, CircleHelp, ShieldCheck, Siren, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle2, CircleHelp, ShieldCheck, Siren } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { LogoMark } from "@/components/logo-mark";
 import { MeetingCard } from "@/components/meeting-card";
-import { categoryMeta, solutions, type Category } from "@/lib/solutions";
+import { categoryMeta, pickRandomSolution, solutions, type Category } from "@/lib/solutions";
 import { PersonPhoto } from "@/components/learn/person-photo";
 import { learnLibrary } from "@/lib/learn";
 import { useApp, type QuizData } from "@/components/app-provider";
@@ -25,6 +24,7 @@ const faqs = [
 
 export function HomeContent() {
   const { quiz, meetings } = useApp();
+  const router = useRouter();
   const selectedIds = normalizeConditionIds(quiz?.conditions);
   const upcomingMeetings = meetings
     .filter((meeting) => !selectedIds.length || selectedIds.includes(meeting.condition))
@@ -64,8 +64,7 @@ export function HomeContent() {
 
   function openRandomActivity(event: MouseEvent<HTMLAnchorElement>) {
     event.preventDefault();
-    const randomSolution = getRandomEmergencySolution(quiz, selectedConditionKey);
-    router.push(randomSolution ? `/solutions/${randomSolution.id}` : "/help-now");
+    router.push(`/solutions/${pickRandomSolution().id}`);
   }
 
   return (
@@ -73,22 +72,28 @@ export function HomeContent() {
       <section className="page-shell relative grid min-h-[680px] items-center gap-12 py-16 lg:grid-cols-[1.05fr_.95fr] lg:py-24">
         <div className="relative z-10">
           <p className="eyebrow mb-5">👋 You are not your thoughts</p>
-          <h1 className="max-w-3xl font-display text-6xl font-semibold leading-[.95] tracking-[-.04em] text-ink sm:text-7xl lg:text-[5.5rem]">
-            Make room for what you <span className="relative inline-block text-terracotta">really feel.
-              <svg className="absolute -bottom-3 left-0 w-full text-ochre" viewBox="0 0 300 18" fill="none" aria-hidden>
-                <path d="M3 12C69 3 151 4 297 9" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-              </svg>
+          <h1 className="max-w-xl font-display text-6xl font-medium leading-[0.9] tracking-[-.06em] text-ink sm:text-7xl lg:text-8xl">
+            Say it,<br />
+            <span className="relative inline-block text-terracotta">
+              <span className="absolute -inset-x-2 bottom-[0.06em] top-[0.38em] -z-10 rounded-full bg-terracotta-light/80" aria-hidden />
+              hear it back.
             </span>
           </h1>
           <p className="mt-10 max-w-xl text-lg leading-8 text-ink/65">
             {hasQuiz
-              ? `Find a direct next step for ${focusText}, explore the rest of Echo, and keep a private record of what helps—without judgment.`
+              ? `Practical solutions and information to help you learn to live with ${focusText}. Don’t hide it. Show yourself, and live the echo.`
               : "Learn how Echo works, complete the short quiz, and get a private starting point tailored to your answers."}
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" className="h-13 rounded-full bg-terracotta px-7 text-base text-white hover:bg-ink">
-              <Link href="/quiz">Start with the quiz <ArrowRight /></Link>
-            </Button>
+            {hasQuiz ? (
+              <Button asChild size="lg" className="h-13 rounded-full bg-terracotta px-7 text-base text-white hover:bg-ink">
+                <Link href="/solutions" onClick={openRandomActivity}><Siren className="size-5" /> I Need Help Now <ArrowRight /></Link>
+              </Button>
+            ) : (
+              <Button asChild size="lg" className="h-13 rounded-full bg-terracotta px-7 text-base text-white hover:bg-ink">
+                <Link href="/quiz">Take the quiz <ArrowRight /></Link>
+              </Button>
+            )}
             <Button asChild variant="outline" size="lg" className="h-13 rounded-full border-ink/20 bg-white/70 px-7 text-base">
               <Link href="/learn">{learnLabel}</Link>
             </Button>
@@ -97,18 +102,22 @@ export function HomeContent() {
             <ShieldCheck className="size-4 text-sage" /> Private by default. Educational, never diagnostic.
           </p>
         </div>
-        <div className="relative mx-auto aspect-square w-full max-w-[520px]">
-          <div className="absolute inset-[8%] rounded-[48%_52%_46%_54%] bg-sage-light" />
-          <div className="absolute inset-[18%] rotate-6 rounded-[42%_58%_55%_45%] bg-terracotta-light" />
-          <div className="absolute left-[18%] top-[17%] w-[64%] -rotate-3 rounded-[2.5rem] border border-white/70 bg-paper p-7 shadow-[0_24px_80px_rgba(41,50,45,.14)] sm:p-9">
-            <span className="mb-6 grid size-12 place-items-center rounded-2xl bg-ochre-light text-2xl">💬</span>
-            <p className="font-display text-3xl font-semibold leading-tight sm:text-4xl">“A thought can feel loud without being a command.”</p>
-            <div className="mt-8 h-2 w-full overflow-hidden rounded-full bg-cream"><div className="h-full w-2/3 rounded-full bg-terracotta" /></div>
-            <p className="mt-3 text-xs font-bold uppercase tracking-widest text-ink/45">A small reminder from Echo</p>
-          </div>
-          <Sparkles className="absolute right-[4%] top-[9%] size-12 text-ochre" />
-          <LogoMark className="absolute bottom-[9%] left-[6%] size-16 -rotate-12 drop-shadow-[0_12px_24px_rgba(41,50,45,0.16)]" />
-        </div>
+        <a href="https://www.who.int/news-room/fact-sheets/detail/mental-disorders" target="_blank" rel="noreferrer" className="group relative block rounded-[2rem] bg-paper p-6 shadow-[0_24px_70px_rgba(41,50,45,.1)] sm:p-8">
+          <p className="text-xs font-bold uppercase tracking-[.18em] text-terracotta">World Health Organization · 2023</p>
+          <ul className="mt-6 space-y-3">
+            {[
+              ["1 in 7", "people were living with a mental disorder.", "bg-terracotta-light"],
+              ["470 million", "people were living with an anxiety disorder.", "bg-ochre-light"],
+              ["322 million", "people were living with depression.", "bg-sage-light"],
+            ].map(([figure, detail, tone]) => (
+              <li key={figure} className={`rounded-2xl p-4 ${tone}`}>
+                <p className="font-display text-4xl font-semibold leading-none tracking-[-.04em] text-ink">{figure}</p>
+                <p className="mt-2 text-sm leading-6 text-ink/65">{detail}</p>
+              </li>
+            ))}
+          </ul>
+          <span className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-terracotta">Read the fact sheet <ArrowRight className="size-4 transition group-hover:translate-x-1" /></span>
+        </a>
       </section>
 
       {selectedProfiles.length > 0 && (
@@ -345,11 +354,6 @@ function getEmergencySolution(quiz: QuizData | null, selectedConditionKey: strin
   const pool = getEmergencyPool(quiz, selectedConditionKey);
   const seed = [...(quiz?.updatedAt ?? "echo")].reduce((total, character) => total + character.charCodeAt(0), 0);
   return pool[seed % pool.length];
-}
-
-function getRandomEmergencySolution(quiz: QuizData | null, selectedConditionKey: string) {
-  const pool = getEmergencyPool(quiz, selectedConditionKey);
-  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 function getEmergencyPool(quiz: QuizData | null, selectedConditionKey: string) {

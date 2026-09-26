@@ -388,3 +388,7 @@ export function recommendationFor(score?: number) {
   if (score === undefined) return "Take the quiz to personalize";
   return recommendationLabels[Math.max(0, Math.min(3, score))];
 }
+
+export function pickRandomSolution() {
+  return solutions[Math.floor(Math.random() * solutions.length)];
+}
