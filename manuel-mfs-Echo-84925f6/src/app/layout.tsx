@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s | Echo",
   },
   description:
-    "Empathetic OCD education, practical support activities, a private journal, and a safer community.",
+    "Empathetic mental health education matched to the condition you choose, practical support activities, a private journal, and a safer community.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

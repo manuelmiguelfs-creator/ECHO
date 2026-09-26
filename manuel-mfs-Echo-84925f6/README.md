@@ -33,7 +33,6 @@ npm start
 - `/faq` — platform questions and condition summaries
 - `/journal` — private local journal, filters, pattern counts, and export
 - `/community` — reviewed contribution form
-- `/testimonials` — public profile gallery
 - `/about` — project story and privacy decisions
 - `/admin/moderation` — unlinked local moderation prototype
 
