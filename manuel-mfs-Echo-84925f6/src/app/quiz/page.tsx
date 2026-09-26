@@ -320,7 +320,7 @@ export default function QuizPage() {
         {/* Right Aside: Interactive Results / Preview Card */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
           {result && best ? (
-            <div className="relative overflow-hidden rounded-[2.5rem] bg-ink p-7 text-white shadow-xl sm:p-9">
+            <div className="relative overflow-hidden rounded-[2.5rem] bg-terracotta p-7 text-white shadow-xl sm:p-9">
               {/* Decorative background glow */}
               <div className="pointer-events-none absolute -bottom-12 -right-12 size-48 rounded-full bg-terracotta/25 blur-3xl" />
               <div className="pointer-events-none absolute -left-12 -top-12 size-40 rounded-full bg-ochre/15 blur-2xl" />
@@ -425,10 +425,9 @@ export default function QuizPage() {
               </div>
             </div>
           ) : (
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-ink/10 bg-paper p-8 text-center shadow-[0_20px_50px_rgba(41,50,45,0.03)] sm:p-10">
-              {/* Soft decorative background shapes */}
-              <div className="pointer-events-none absolute -right-8 -top-8 size-36 rounded-full bg-ochre-light/40 blur-2xl" />
-              <div className="pointer-events-none absolute -bottom-8 -left-8 size-36 rounded-full bg-sage-light/40 blur-2xl" />
+            <div className="relative overflow-hidden rounded-[2.5rem] bg-terracotta-light p-8 text-center shadow-[0_20px_50px_rgba(184,95,69,0.12)] sm:p-10">
+              <div className="pointer-events-none absolute -right-8 -top-8 size-36 rounded-full bg-ochre-light/50 blur-2xl" />
+              <div className="pointer-events-none absolute -bottom-8 -left-8 size-36 rounded-full bg-terracotta/20 blur-2xl" />
 
               <div className="relative z-10">
                 <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-ochre-light text-2xl shadow-xs">
@@ -459,7 +458,7 @@ export default function QuizPage() {
                     <li className="flex items-center gap-2">
                       <div
                         className={`flex size-4 items-center justify-center rounded-full ${
-                          isNameDone ? "bg-sage text-ink" : "bg-ink/10 text-ink/30"
+                          isNameDone ? "bg-terracotta text-cream" : "bg-white/70 text-ink/30"
                         }`}
                       >
                         <Check className="size-2.5 stroke-[3]" />
@@ -471,7 +470,7 @@ export default function QuizPage() {
                     <li className="flex items-center gap-2">
                       <div
                         className={`flex size-4 items-center justify-center rounded-full ${
-                          isConditionsDone ? "bg-sage text-ink" : "bg-ink/10 text-ink/30"
+                          isConditionsDone ? "bg-terracotta text-cream" : "bg-white/70 text-ink/30"
                         }`}
                       >
                         <Check className="size-2.5 stroke-[3]" />
@@ -483,7 +482,7 @@ export default function QuizPage() {
                     <li className="flex items-center gap-2">
                       <div
                         className={`flex size-4 items-center justify-center rounded-full ${
-                          isDurationDone ? "bg-sage text-ink" : "bg-ink/10 text-ink/30"
+                          isDurationDone ? "bg-terracotta text-cream" : "bg-white/70 text-ink/30"
                         }`}
                       >
                         <Check className="size-2.5 stroke-[3]" />

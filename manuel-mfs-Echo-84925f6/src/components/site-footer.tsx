@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { type MouseEvent } from "react";
 import { useApp } from "@/components/app-provider";
 import { LogoMark } from "@/components/logo-mark";
 import { formatConditionList, selectedConditionProfiles } from "@/lib/conditions";
+import { pickRandomSolution } from "@/lib/solutions";
 
 const footerLinks = [
   ["/learn", "Learn"],
@@ -15,11 +18,17 @@ const footerLinks = [
 ];
 
 export function SiteFooter() {
+  const router = useRouter();
   const { quiz } = useApp();
   const labels = selectedConditionProfiles(quiz?.conditions).map((profile) => profile.label);
   const hasQuiz = labels.length > 0;
   const visibleLinks = hasQuiz ? footerLinks : [["/quiz", "Take the Quiz"]];
   const list = formatConditionList(labels);
+
+  function openRandomActivity(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    router.push(`/solutions/${pickRandomSolution().id}`);
+  }
 
   return (
     <footer className="mt-auto bg-ink text-cream">
@@ -43,7 +52,12 @@ export function SiteFooter() {
           <p className="mb-4 text-xs font-bold uppercase tracking-[.18em] text-cream/50">Quick links</p>
           <div className="grid gap-3">
             {visibleLinks.map(([href, label]) => (
-              <Link key={href} href={href} className="font-medium text-cream/80 hover:text-white">
+              <Link
+                key={href}
+                href={href}
+                className="font-medium text-cream/80 hover:text-white"
+                onClick={href === "/help-now" ? openRandomActivity : undefined}
+              >
                 {label}
               </Link>
             ))}
