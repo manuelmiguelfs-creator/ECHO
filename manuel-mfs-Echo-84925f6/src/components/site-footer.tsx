@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { HeartHandshake } from "lucide-react";
+import { useApp } from "@/components/app-provider";
 
 const footerLinks = [
   ["/learn", "Learn"],
@@ -10,6 +13,10 @@ const footerLinks = [
 ];
 
 export function SiteFooter() {
+  const { quiz } = useApp();
+  const hasQuiz = Boolean(quiz?.conditions?.length);
+  const visibleLinks = hasQuiz ? footerLinks : [["/quiz", "Take the Quiz"]];
+
   return (
     <footer className="mt-auto bg-ink text-cream">
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-14 md:grid-cols-[1fr_auto] lg:px-8">
@@ -21,8 +28,7 @@ export function SiteFooter() {
             <span className="font-display text-3xl font-semibold">Echo</span>
           </div>
           <p className="text-cream/70">
-            A platform dedicated to raising awareness and understanding of OCD, while making room
-            for future mental health education.
+            A private space for learning how Echo works and finding a next step that feels manageable.
           </p>
           <p className="mt-5 text-xs leading-relaxed text-cream/50">
             Echo is educational and supportive. It does not diagnose, provide treatment, or replace
@@ -32,7 +38,7 @@ export function SiteFooter() {
         <div>
           <p className="mb-4 text-xs font-bold uppercase tracking-[.18em] text-cream/50">Quick links</p>
           <div className="grid gap-3">
-            {footerLinks.map(([href, label]) => (
+            {visibleLinks.map(([href, label]) => (
               <Link key={href} href={href} className="font-medium text-cream/80 hover:text-white">
                 {label}
               </Link>

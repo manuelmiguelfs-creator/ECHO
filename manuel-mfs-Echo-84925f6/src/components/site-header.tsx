@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { HeartHandshake, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useApp } from "@/components/app-provider";
 
 const links = [
   { href: "/learn", label: "Learn" },
@@ -16,7 +17,10 @@ const links = [
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const { quiz } = useApp();
   const [open, setOpen] = useState(false);
+  const hasQuiz = Boolean(quiz?.conditions?.length);
+  const visibleLinks = hasQuiz ? links : [];
 
   return (
     <header className="sticky top-0 z-50 border-b border-ink/10 bg-cream">
@@ -34,7 +38,7 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
-          {links.map((link) => (
+          {visibleLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -53,9 +57,9 @@ export function SiteHeader() {
           <Button asChild variant="ghost" className="rounded-full">
             <Link href="/quiz">Take the quiz</Link>
           </Button>
-          <Button asChild className="rounded-full bg-ink text-white hover:bg-terracotta">
+          {hasQuiz && <Button asChild className="rounded-full bg-ink text-white hover:bg-terracotta">
             <Link href="/help-now">I need help now</Link>
-          </Button>
+          </Button>}
         </div>
 
         <button
@@ -72,7 +76,7 @@ export function SiteHeader() {
       {open && (
         <nav className="border-t border-ink/10 bg-cream px-5 py-5 lg:hidden" aria-label="Mobile navigation">
           <div className="mx-auto grid max-w-7xl gap-1">
-            {links.map((link) => (
+            {visibleLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}

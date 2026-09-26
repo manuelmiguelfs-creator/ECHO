@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BookOpen, CheckCircle2, CircleHelp, Heart, ShieldCheck, Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { type MouseEvent } from "react";
+import { ArrowRight, BookOpen, CheckCircle2, CircleHelp, Heart, ShieldCheck, Siren, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { categoryMeta } from "@/lib/solutions";
+import { categoryMeta, solutions, type Category } from "@/lib/solutions";
 import { testimonials } from "@/lib/testimonials";
-import { useApp } from "@/components/app-provider";
+import { useApp, type QuizData } from "@/components/app-provider";
 import { conditionProfiles, normalizeConditionIds } from "@/lib/conditions";
 
 const faqs = [
@@ -20,10 +22,21 @@ const faqs = [
 
 export function HomeContent() {
   const { quiz } = useApp();
+  const router = useRouter();
   const selectedIds = normalizeConditionIds(quiz?.conditions);
   const selectedProfiles = conditionProfiles.filter((profile) => selectedIds.includes(profile.id));
+  const selectedConditionKey = selectedIds.join(",");
   const selectedNames = selectedProfiles.map((profile) => profile.label).join(", ");
-  const focusText = selectedNames || "your selected conditions";
+  const hasQuiz = Boolean(quiz?.conditions?.length);
+  const focusText = selectedNames || "how Echo works";
+  const emergencySolution = getEmergencySolution(quiz, selectedConditionKey);
+  const emergencyHref = emergencySolution ? `/solutions/${emergencySolution.id}` : "/help-now";
+
+  function openRandomActivity(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    const randomSolution = getRandomEmergencySolution(quiz, selectedConditionKey);
+    router.push(randomSolution ? `/solutions/${randomSolution.id}` : "/help-now");
+  }
 
   return (
     <div className="overflow-hidden">
@@ -38,7 +51,9 @@ export function HomeContent() {
             </span>
           </h1>
           <p className="mt-10 max-w-xl text-lg leading-8 text-ink/65">
-            Understand {focusText}, find practical support for difficult moments, and keep a private record of what helps—without judgment.
+            {hasQuiz
+              ? `Find a direct next step for ${focusText}, explore the rest of Echo, and keep a private record of what helps—without judgment.`
+              : "Learn how Echo works, complete the short quiz, and get a private starting point tailored to your answers."}
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-13 rounded-full bg-terracotta px-7 text-base text-white hover:bg-ink">
@@ -47,6 +62,11 @@ export function HomeContent() {
             <Button asChild variant="outline" size="lg" className="h-13 rounded-full border-ink/20 bg-white/70 px-7 text-base">
               <Link href="/learn">Understand your conditions</Link>
             </Button>
+            {hasQuiz && (
+              <Button asChild variant="outline" size="lg" className="h-13 rounded-full border-ink/20 bg-white/70 px-7 text-base">
+                <Link href="/what-is-ocd">Understand your conditions</Link>
+              </Button>
+            )}
           </div>
           <p className="mt-6 flex items-center gap-2 text-sm text-ink/55">
             <ShieldCheck className="size-4 text-sage" /> Private by default. Educational, never diagnostic.
@@ -84,15 +104,41 @@ export function HomeContent() {
         </section>
       )}
 
-      <section className="page-shell pb-10">
-        <div className="grid overflow-hidden rounded-[2rem] bg-ink text-white md:grid-cols-[1fr_auto]">
-          <div className="p-7 sm:p-10">
-            <p className="mb-2 text-sm font-bold uppercase tracking-[.16em] text-terracotta-light">Need help right now?</p>
-            <h2 className="font-display text-3xl font-semibold">Choose one small next step.</h2>
-            <p className="mt-3 max-w-2xl text-white/65">Find a supportive activity for anxiety or a compulsion. Echo is not an emergency service; contact local emergency services if you or someone else is in immediate danger.</p>
+      {!hasQuiz && (
+        <section className="page-shell pb-24">
+          <div className="grid gap-5 md:grid-cols-3">
+            {[
+              ["01", "Learn how Echo works", "Echo brings together private reflection, supportive activities, and responsibly reviewed community ideas."],
+              ["02", "Answer a few questions", "The quiz helps Echo understand which broad activity categories may fit you. It is not a diagnosis."],
+              ["03", "Choose your next step", "After the quiz, the homepage can take you directly to a randomly selected activity whenever you need one."],
+            ].map(([number, title, text]) => (
+              <article key={number} className={`rounded-[1.75rem] p-7 ${number === "01" ? "bg-sage-light" : number === "02" ? "bg-ochre-light" : "bg-pink-soft"}`}>
+                <span className="font-display text-4xl text-ink/25">{number}</span>
+                <h2 className="mt-8 font-display text-2xl font-semibold">{title}</h2>
+                <p className="mt-4 leading-7 text-ink/65">{text}</p>
+              </article>
+            ))}
           </div>
-          <div className="flex items-center bg-terracotta p-7 sm:p-10">
-            <Button asChild size="lg" className="h-13 rounded-full bg-white px-7 text-ink hover:bg-cream"><Link href="/help-now">I need help now <ArrowRight /></Link></Button>
+          <div className="mt-8 rounded-[2rem] bg-ink p-8 text-center text-white sm:p-12">
+            <h2 className="font-display text-4xl font-semibold">Start privately, at your own pace.</h2>
+            <p className="mx-auto mt-4 max-w-2xl leading-7 text-white/65">Complete the quiz to unlock personalized education and support suggestions. Echo is educational and does not replace professional or emergency care.</p>
+            <Button asChild className="mt-7 h-12 rounded-full bg-white px-7 text-ink hover:bg-cream"><Link href="/quiz">Take the quiz <ArrowRight /></Link></Button>
+          </div>
+        </section>
+      )}
+
+      {hasQuiz && (
+        <>
+      <section className="page-shell pb-10">
+        <div className="grid overflow-hidden rounded-[2rem] border border-terracotta/20 bg-ochre-light shadow-[0_16px_45px_rgba(180,101,72,.12)] md:grid-cols-[1fr_auto]">
+          <div className="relative overflow-hidden p-7 sm:p-10">
+            <div className="absolute -right-16 -top-20 size-56 rounded-full border-[28px] border-white/30" />
+            <p className="relative mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-[.16em] text-terracotta"><Siren className="size-4" /> Need help right now?</p>
+            <h2 className="relative font-display text-3xl font-semibold text-ink">Choose one small next step.</h2>
+            <p className="relative mt-3 max-w-2xl text-ink/65">Get a randomly selected activity matched to your quiz answers. Echo is not an emergency service; contact local emergency services if you or someone else is in immediate danger.</p>
+          </div>
+          <div className="flex items-center justify-center bg-ochre-light p-7 sm:p-10">
+            <Button asChild size="lg" className="h-14 rounded-full border-2 border-terracotta bg-terracotta px-8 text-white shadow-[0_10px_30px_rgba(180,101,72,.3)] transition hover:-translate-y-1 hover:bg-ink hover:shadow-[0_14px_36px_rgba(41,50,45,.25)]"><Link href={emergencyHref} onClick={openRandomActivity}><Siren className="size-5" /> I Need Help Now <ArrowRight /></Link></Button>
           </div>
         </div>
       </section>
@@ -215,6 +261,43 @@ export function HomeContent() {
           </div>
         </div>
       </section>
+        </>
+      )}
     </div>
   );
+}
+
+function getEmergencySolution(quiz: QuizData | null, selectedConditionKey: string) {
+  const pool = getEmergencyPool(quiz, selectedConditionKey);
+  const seed = [...(quiz?.updatedAt ?? "echo")].reduce((total, character) => total + character.charCodeAt(0), 0);
+  return pool[seed % pool.length];
+}
+
+function getRandomEmergencySolution(quiz: QuizData | null, selectedConditionKey: string) {
+  const pool = getEmergencyPool(quiz, selectedConditionKey);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function getEmergencyPool(quiz: QuizData | null, selectedConditionKey: string) {
+  const selectedConditionIds = selectedConditionKey ? selectedConditionKey.split(",") : [];
+  const suggestedCategories = [...new Set(
+    conditionProfiles
+      .filter((profile) => selectedConditionIds.includes(profile.id))
+      .flatMap((profile) => profile.suggestedCategories),
+  )] as Category[];
+  let pool = suggestedCategories.length
+    ? solutions.filter((solution) => suggestedCategories.includes(solution.category))
+    : solutions;
+
+  if (quiz) {
+    const bestCategory = Object.entries({
+      Outside: quiz.outsideScore,
+      Inside: quiz.insideScore,
+      Mental: quiz.mentalScore,
+    }).sort((a, b) => b[1] - a[1])[0][0] as Category;
+    const preferred = pool.filter((solution) => solution.category === bestCategory);
+    if (preferred.length) pool = preferred;
+  }
+
+  return pool;
 }
