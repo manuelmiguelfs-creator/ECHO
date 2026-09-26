@@ -13,7 +13,7 @@ const goals = [
 export default function AboutPage() {
   return (
     <>
-      <PageHero eyebrow="Our story" title="Built by students who wanted mental health conversations to feel more human." description="Echo began with concern about how poorly OCD—and many other mental health conditions—can be understood, represented, and discussed." tone="sage" />
+      <PageHero eyebrow="Our story" title="Built by students who wanted mental health conversations to feel more human." description="Echo began with concern about how poorly OCD—and many other mental health conditions—can be understood, represented, and discussed." tone="sage" glow />
       <div className="page-shell py-14">
         <section className="grid gap-10 lg:grid-cols-2">
           <div><p className="eyebrow">Why Echo exists</p><h2 className="mt-4 font-display text-5xl font-semibold">OCD is not a personality trait or a passing habit.</h2></div>

@@ -32,7 +32,7 @@ export default function CommunityPage() {
 
   return (
     <>
-      <PageHero eyebrow="🔄 Help our community" title="A strategy shared responsibly can start a useful conversation." description="Do you use a tactic that is not in our solution library? This is your chance to help us improve Echo." tone="pink" />
+      <PageHero eyebrow="🔄 Help our community" title="A strategy shared responsibly can start a useful conversation." description="Do you use a tactic that is not in our solution library? This is your chance to help us improve Echo." tone="pink" glow />
       <div className="page-shell grid gap-10 py-14 lg:grid-cols-[.7fr_1.3fr]">
         <aside className="lg:sticky lg:top-24 lg:self-start">
           <p className="eyebrow">How it works</p><h2 className="mt-3 font-display text-4xl font-semibold">Share. Review. Learn.</h2>

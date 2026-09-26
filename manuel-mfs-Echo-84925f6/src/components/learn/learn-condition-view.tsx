@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRef, useSyncExternalStore } from "react";
 import { BookOpen, CircleHelp, Phone, Sparkles, Users } from "lucide-react";
-import { accentBg } from "@/components/learn/accent";
+import { HeroGlow, heroGradients } from "@/components/page-hero";
 import { FaqSection, OverviewSection, ResourcesSection, TestimonialsSection } from "@/components/learn/learn-sections";
 import type { ConditionId } from "@/lib/conditions";
 import { learnSections, type LearnEntry, type LearnSectionId } from "@/lib/learn";
@@ -52,8 +52,9 @@ export function LearnConditionView({
 
   return (
     <>
-      <section className={`${accentBg[entry.accent]} border-b border-ink/5`}>
-        <div className="page-shell py-12 sm:py-16">
+      <section className={`${heroGradients[entry.accent]} relative overflow-hidden border-b border-ink/5`}>
+        <HeroGlow tone={entry.accent} />
+        <div className="page-shell relative py-12 sm:py-16">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <p className="flex items-center gap-2 text-sm font-semibold text-ink/60">
               <Sparkles className="size-4 text-terracotta" /> Based on your quiz answers

@@ -63,7 +63,7 @@ export default function JournalPage() {
 
   return (
     <>
-      <PageHero eyebrow="Private reflection" title="Compulsion Journal" description="Record what happened, what you felt, and what you tried. Patterns can support reflection, but they are not diagnoses." tone="ochre" />
+      <PageHero eyebrow="Private reflection" title="Compulsion Journal" description="Record what happened, what you felt, and what you tried. Patterns can support reflection, but they are not diagnoses." tone="ochre" glow />
       <div className="page-shell py-12">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div className="flex items-start gap-3"><LockKeyhole className="mt-1 size-5 text-terracotta" /><div><p className="font-semibold">Private by default</p><p className="text-sm text-ink/55">Entries remain in this browser’s local storage. Clearing browser data will remove them.</p></div></div>

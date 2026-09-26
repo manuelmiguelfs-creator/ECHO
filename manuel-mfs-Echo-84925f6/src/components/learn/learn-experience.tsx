@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ArrowRight, BookOpen, CircleHelp, Phone, Users } from "lucide-react";
 import { useApp } from "@/components/app-provider";
 import { LearnConditionView } from "@/components/learn/learn-condition-view";
+import { HeroGlow, heroGradients } from "@/components/page-hero";
 import { Button } from "@/components/ui/button";
 import { normalizeConditionIds } from "@/lib/conditions";
 import { learnLibrary } from "@/lib/learn";
@@ -36,7 +37,9 @@ export function LearnExperience() {
 function TakeQuizPrompt() {
   return (
     <section className="page-shell py-16 sm:py-24">
-      <div className="rounded-[2.5rem] bg-blue-soft p-8 sm:p-14">
+      <div className={`${heroGradients.blue} relative overflow-hidden rounded-[2.5rem] p-8 sm:p-14`}>
+        <HeroGlow tone="blue" />
+        <div className="relative">
         <p className="eyebrow">Learn</p>
         <h1 className="mt-4 max-w-3xl font-display text-5xl font-semibold leading-[1.02] tracking-[-.03em] sm:text-6xl">
           Your guide is built around you.
@@ -57,6 +60,7 @@ function TakeQuizPrompt() {
               </div>
             </div>
           ))}
+        </div>
         </div>
       </div>
     </section>
