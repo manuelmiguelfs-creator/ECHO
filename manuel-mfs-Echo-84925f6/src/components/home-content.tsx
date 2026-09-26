@@ -25,7 +25,6 @@ const faqs = [
 export function HomeContent() {
   const router = useRouter();
   const { quiz, meetings } = useApp();
-  const router = useRouter();
   const selectedIds = normalizeConditionIds(quiz?.conditions);
   const upcomingMeetings = meetings
     .filter((meeting) => !selectedIds.length || selectedIds.includes(meeting.condition))
