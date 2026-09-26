@@ -5,7 +5,7 @@ import { HeartHandshake } from "lucide-react";
 import { useApp } from "@/components/app-provider";
 
 const footerLinks = [
-  ["/what-is-ocd", "What is OCD?"],
+  ["/learn", "Learn"],
   ["/solutions", "Solution Library"],
   ["/quiz", "Take the Quiz"],
   ["/community", "Help Our Community"],

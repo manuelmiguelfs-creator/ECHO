@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useApp } from "@/components/app-provider";
 
 const links = [
-  { href: "/what-is-ocd", label: "Learn" },
+  { href: "/learn", label: "Learn" },
   { href: "/solutions", label: "Solutions" },
   { href: "/journal", label: "Journal" },
   { href: "/community", label: "Community" },

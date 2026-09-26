@@ -29,7 +29,8 @@ npm start
 - `/quiz` — category scoring and personalized recommendations
 - `/help-now` — recommendations and random activity
 - `/solutions` and `/solutions/:id` — searchable library and interactive activities
-- `/what-is-ocd` and `/faq` — educational material and trusted sources
+- `/learn` — guide for the condition(s) chosen in the quiz, with Overview, FAQ, Useful resources, and Testimonials tabs
+- `/faq` — platform questions and condition summaries
 - `/journal` — private local journal, filters, pattern counts, and export
 - `/community` — reviewed contribution form
 - `/testimonials` — public profile gallery
@@ -43,6 +44,7 @@ npm start
 - `JournalEntry`: date, description, emotions, activities, notes, and completion
 - `Submission`: reviewer-only identity/contact data, source, category, content, and moderation status
 - `Testimonial`: display/full name, biography, birth date, nationality, and featured state
+- `LearnEntry`: one file per condition in `src/lib/learn/conditions/`, following the schema in `src/lib/learn/types.ts`. Every section has a fixed number of items so all guides look the same; TypeScript fails the build if a condition is missing or incomplete. Phone numbers live once in `src/lib/learn/shared.ts` and photos are Wikimedia Commons file names passed to `commonsPhoto()`.
 
 ## Privacy and current architecture
 
