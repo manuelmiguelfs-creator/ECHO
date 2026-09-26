@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Calendar,
@@ -60,6 +61,7 @@ function calculateScores(conditions: string[]) {
 }
 
 export default function QuizPage() {
+  const router = useRouter();
   const { quiz, setQuiz } = useApp();
   const [saved, setSaved] = useState(false);
   const [conditionError, setConditionError] = useState("");
@@ -100,7 +102,7 @@ export default function QuizPage() {
     const updatedForm = { ...form, ...scores };
     setForm(updatedForm);
     setQuiz({ ...updatedForm, updatedAt: new Date().toISOString() });
-    setSaved(true);
+    router.push("/");
   }
 
   const result = saved || quiz ? form : null;

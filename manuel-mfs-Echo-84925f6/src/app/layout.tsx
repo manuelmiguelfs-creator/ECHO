@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DM_Sans, Fraunces } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/components/app-provider";
+import { IntroSplash } from "@/components/intro-splash";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${dmSans.variable} ${fraunces.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
+        <IntroSplash />
         <AppProvider>
           <SiteHeader />
           <main className="flex-1">{children}</main>
