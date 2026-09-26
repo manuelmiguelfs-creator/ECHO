@@ -7,6 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { categoryMeta } from "@/lib/solutions";
 import { testimonials } from "@/lib/testimonials";
 import { useApp } from "@/components/app-provider";
+import { MeetingCard } from "@/components/meeting-card";
 import { conditionProfiles, normalizeConditionIds } from "@/lib/conditions";
 
 const faqs = [
@@ -19,8 +20,12 @@ const faqs = [
 ];
 
 export function HomeContent() {
-  const { quiz } = useApp();
+  const { quiz, meetings } = useApp();
   const selectedIds = normalizeConditionIds(quiz?.conditions);
+  const upcomingMeetings = meetings
+    .filter((meeting) => !selectedIds.length || selectedIds.includes(meeting.condition))
+    .sort((a, b) => a.dateTime.localeCompare(b.dateTime))
+    .slice(0, 3);
   const selectedProfiles = conditionProfiles.filter((profile) => selectedIds.includes(profile.id));
   const selectedNames = selectedProfiles.map((profile) => profile.label).join(", ");
   const focusText = selectedNames || "your selected conditions";
@@ -95,6 +100,29 @@ export function HomeContent() {
             <Button asChild size="lg" className="h-13 rounded-full bg-white px-7 text-ink hover:bg-cream"><Link href="/help-now">I need help now <ArrowRight /></Link></Button>
           </div>
         </div>
+      </section>
+
+      <section className="page-shell pb-10 pt-6">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <p className="eyebrow">🤝 Meet</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">
+              {selectedProfiles.length ? `Upcoming meetings for ${selectedNames}` : "Upcoming meetings"}
+            </h2>
+            <p className="mt-3 max-w-2xl text-ink/60">Small, in-person meetups to talk with people who understand what you live with.</p>
+          </div>
+          <Button asChild variant="outline" className="rounded-full bg-transparent"><Link href="/meet">See all meetings <ArrowRight /></Link></Button>
+        </div>
+        {upcomingMeetings.length ? (
+          <div className="mt-8 grid gap-5 md:grid-cols-3">
+            {upcomingMeetings.map((meeting) => <MeetingCard key={meeting.id} meeting={meeting} />)}
+          </div>
+        ) : (
+          <div className="mt-8 rounded-[2rem] border border-dashed border-ink/20 p-8 text-center">
+            <p className="text-ink/60">No meetings for your conditions yet.</p>
+            <Button asChild className="mt-4 rounded-full bg-terracotta text-white hover:bg-ink"><Link href="/meet">Create the first one</Link></Button>
+          </div>
+        )}
       </section>
 
       <section className="section-space page-shell">

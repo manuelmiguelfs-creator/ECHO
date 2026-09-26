@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { Category } from "@/lib/solutions";
-import { normalizeConditionIds } from "@/lib/conditions";
+import { normalizeConditionIds, type ConditionId } from "@/lib/conditions";
 
 export type QuizData = {
   fullName: string;
@@ -39,6 +39,21 @@ export type Submission = {
   submittedAt: string;
 };
 
+export type Meeting = {
+  id: string;
+  organizer: string;
+  condition: ConditionId;
+  city: string;
+  place: string;
+  dateTime: string;
+  description?: string;
+  attendees: number;
+  createdByMe?: boolean;
+  createdAt: string;
+  lat?: number;
+  lng?: number;
+};
+
 type AppState = {
   quiz: QuizData | null;
   setQuiz: (quiz: QuizData) => void;
@@ -52,6 +67,11 @@ type AppState = {
   submissions: Submission[];
   addSubmission: (submission: Omit<Submission, "id" | "status" | "submittedAt">) => void;
   updateSubmissionStatus: (id: string, status: Submission["status"]) => void;
+  meetings: Meeting[];
+  joinedMeetings: string[];
+  addMeeting: (meeting: Omit<Meeting, "id" | "attendees" | "createdByMe" | "createdAt">) => void;
+  toggleMeeting: (id: string) => void;
+  setMeetingLocation: (id: string, lat: number, lng: number) => void;
   hydrated: boolean;
 };
 
@@ -87,11 +107,114 @@ const starterJournal: JournalEntry[] = [
   },
 ];
 
+const starterMeetings: Meeting[] = [
+  {
+    id: "meet-1",
+    organizer: "Marta Silva",
+    condition: "ocd",
+    city: "Seixal",
+    place: "Parque Urbano do Seixal",
+    dateTime: "2026-10-10T10:30",
+    description: "A relaxed walk and chat by the river. Come as you are — no need to share more than you want.",
+    attendees: 6,
+    createdAt: "2026-09-20T12:00:00.000Z",
+    lat: 38.6378,
+    lng: -9.1036,
+  },
+  {
+    id: "meet-2",
+    organizer: "João Ferreira",
+    condition: "anxiety",
+    city: "Lisboa",
+    place: "Jardim da Estrela",
+    dateTime: "2026-10-12T17:00",
+    description: "Small picnic group. We'll bring tea and some card games to keep things light.",
+    attendees: 9,
+    createdAt: "2026-09-21T12:00:00.000Z",
+    lat: 38.7141,
+    lng: -9.1597,
+  },
+  {
+    id: "meet-3",
+    organizer: "Inês Costa",
+    condition: "depression",
+    city: "Almada",
+    place: "Jardim do Castelo de Almada",
+    dateTime: "2026-10-18T15:00",
+    description: "Sunday afternoon coffee and conversation about the small things that help us get through the week.",
+    attendees: 4,
+    createdAt: "2026-09-22T12:00:00.000Z",
+    lat: 38.6868,
+    lng: -9.1562,
+  },
+  {
+    id: "meet-4",
+    organizer: "Rui Almeida",
+    condition: "ocd",
+    city: "Lisboa",
+    place: "Parque Eduardo VII",
+    dateTime: "2026-10-24T11:00",
+    description: "Open circle to talk about living with OCD day to day, and what has worked for each of us.",
+    attendees: 11,
+    createdAt: "2026-09-23T12:00:00.000Z",
+    lat: 38.7292,
+    lng: -9.1545,
+  },
+  {
+    id: "meet-5",
+    organizer: "Sofia Martins",
+    condition: "ptsd",
+    city: "Setúbal",
+    place: "Parque do Bonfim",
+    dateTime: "2026-10-25T16:00",
+    description: "Quiet, gentle meetup in a calm spot. Leaving early is always fine.",
+    attendees: 3,
+    createdAt: "2026-09-24T12:00:00.000Z",
+    lat: 38.5285,
+    lng: -8.8876,
+  },
+  {
+    id: "meet-6",
+    organizer: "Tiago Rocha",
+    condition: "bipolar",
+    city: "Porto",
+    place: "Parque da Cidade do Porto",
+    dateTime: "2026-10-17T10:00",
+    description: "Morning walk towards the sea, then a coffee. A space to share how we keep balance through the ups and downs.",
+    attendees: 5,
+    createdAt: "2026-09-24T15:00:00.000Z",
+    lat: 41.1685,
+    lng: -8.6776,
+  },
+  {
+    id: "meet-7",
+    organizer: "Beatriz Lopes",
+    condition: "schizophrenia",
+    city: "Seixal",
+    place: "Quinta da Princesa",
+    dateTime: "2026-10-31T15:30",
+    description: "Calm conversation under the trees of the park. Family members and friends are welcome too.",
+    attendees: 4,
+    createdAt: "2026-09-25T10:00:00.000Z",
+    lat: 38.6335,
+    lng: -9.1306,
+  },
+];
+
+function mergeStarterMeetings(saved: Meeting[]) {
+  const starterById = new Map(starterMeetings.map((meeting) => [meeting.id, meeting]));
+  const merged = saved.map((meeting) => starterById.get(meeting.id) ?? meeting);
+  const savedIds = new Set(saved.map((meeting) => meeting.id));
+  return [...merged, ...starterMeetings.filter((meeting) => !savedIds.has(meeting.id))];
+}
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [quiz, setQuizState] = useState<QuizData | null>(null);
   const [journal, setJournal] = useState<JournalEntry[]>(starterJournal);
   const [completedSolutions, setCompletedSolutions] = useState<string[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [meetings, setMeetings] = useState<Meeting[]>(starterMeetings);
+  const [joinedMeetings, setJoinedMeetings] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -115,6 +238,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           setJournal(saved.journal ?? starterJournal);
           setCompletedSolutions(saved.completedSolutions ?? []);
           setSubmissions(saved.submissions ?? []);
+          setMeetings(saved.meetings ? mergeStarterMeetings(saved.meetings) : starterMeetings);
+          setJoinedMeetings(saved.joinedMeetings ?? []);
         }
       } catch {
         // Keep safe local defaults when stored data is malformed.
@@ -127,9 +252,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!hydrated) return;
     localStorage.setItem(
       "echo-app-state",
-      JSON.stringify({ quiz, journal, completedSolutions, submissions }),
+      JSON.stringify({ quiz, journal, completedSolutions, submissions, meetings, joinedMeetings }),
     );
-  }, [quiz, journal, completedSolutions, submissions, hydrated]);
+  }, [quiz, journal, completedSolutions, submissions, meetings, joinedMeetings, hydrated]);
 
   const value = useMemo<AppState>(
     () => ({
@@ -176,9 +301,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         setSubmissions((current) =>
           current.map((submission) => (submission.id === id ? { ...submission, status } : submission)),
         ),
+      meetings,
+      joinedMeetings,
+      addMeeting: (meeting) => {
+        const id = crypto.randomUUID();
+        setMeetings((current) => [
+          { ...meeting, id, attendees: 0, createdByMe: true, createdAt: new Date().toISOString() },
+          ...current,
+        ]);
+        setJoinedMeetings((current) => [...current, id]);
+      },
+      toggleMeeting: (id) =>
+        setJoinedMeetings((current) =>
+          current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
+        ),
+      setMeetingLocation: (id, lat, lng) =>
+        setMeetings((current) => current.map((meeting) => (meeting.id === id ? { ...meeting, lat, lng } : meeting))),
       hydrated,
     }),
-    [quiz, journal, completedSolutions, submissions, hydrated],
+    [quiz, journal, completedSolutions, submissions, meetings, joinedMeetings, hydrated],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

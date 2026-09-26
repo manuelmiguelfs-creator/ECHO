@@ -5,6 +5,7 @@ const footerLinks = [
   ["/what-is-ocd", "What is OCD?"],
   ["/solutions", "Solution Library"],
   ["/quiz", "Take the Quiz"],
+  ["/meet", "Meet People"],
   ["/community", "Help Our Community"],
   ["/help-now", "I Need Help Now!"],
 ];

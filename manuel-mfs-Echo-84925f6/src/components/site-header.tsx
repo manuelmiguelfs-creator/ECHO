@@ -10,6 +10,7 @@ const links = [
   { href: "/what-is-ocd", label: "Learn" },
   { href: "/solutions", label: "Solutions" },
   { href: "/journal", label: "Journal" },
+  { href: "/meet", label: "Meet" },
   { href: "/community", label: "Community" },
   { href: "/about", label: "About" },
 ];
@@ -50,12 +51,18 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
-          <Button asChild variant="ghost" className="rounded-full">
-            <Link href="/quiz">Take the quiz</Link>
-          </Button>
-          <Button asChild className="rounded-full bg-ink text-white hover:bg-terracotta">
-            <Link href="/help-now">I need help now</Link>
-          </Button>
+          <Link
+            href="/quiz"
+            className="inline-flex h-9 items-center justify-center rounded-full px-4 text-sm font-medium text-ink transition-colors hover:bg-muted"
+          >
+            Take the quiz
+          </Link>
+          <Link
+            href="/help-now"
+            className="inline-flex h-9 items-center justify-center rounded-full bg-ink px-4 text-sm font-medium text-white transition-colors hover:bg-terracotta"
+          >
+            I need help now
+          </Link>
         </div>
 
         <button
