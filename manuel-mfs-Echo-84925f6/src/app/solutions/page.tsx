@@ -43,6 +43,7 @@ export default function SolutionsPage() {
           ? `Explore activities that may fit moments related to ${formatConditionList(selectedProfiles.map((profile) => profile.label))}. These are optional support strategies—not medical treatment.`
           : "Explore 22 activities for difficult moments. These are optional support strategies—not medical treatment—and you can stop any activity at any time."}
         tone="sage"
+        glow
       />
       <div className="page-shell py-12">
         <div className="flex flex-col gap-4 rounded-2xl bg-paper p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">

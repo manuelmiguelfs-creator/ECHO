@@ -98,6 +98,7 @@ export default function MeetPage() {
         title="Meet people who understand."
         description="Create or join small, in-person meetups with people living with the same condition. Talk openly about how you live with it, at your own pace."
         tone="blue"
+        glow
       />
 
       <div className="page-shell py-12 lg:py-16">
