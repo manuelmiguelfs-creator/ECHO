@@ -2,11 +2,13 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { Category } from "@/lib/solutions";
+import { normalizeConditionIds } from "@/lib/conditions";
 
 export type QuizData = {
   fullName: string;
-  yearsWithOCD: string;
-  compulsionDuration: string;
+  conditions: string[];
+  symptomsDuration: string;
+  attackDuration: string;
   outsideScore: number;
   insideScore: number;
   mentalScore: number;
@@ -98,7 +100,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         const raw = localStorage.getItem("echo-app-state");
         if (raw) {
           const saved = JSON.parse(raw);
-          setQuizState(saved.quiz ?? null);
+          const savedQuiz = saved.quiz;
+          setQuizState(
+            savedQuiz
+              ? {
+                  ...savedQuiz,
+                  conditions: normalizeConditionIds(
+                    savedQuiz.conditions ??
+                      (savedQuiz.condition ? [savedQuiz.condition] : []),
+                  ),
+                }
+              : null,
+          );
           setJournal(saved.journal ?? starterJournal);
           setCompletedSolutions(saved.completedSolutions ?? []);
           setSubmissions(saved.submissions ?? []);

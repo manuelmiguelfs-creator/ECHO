@@ -17,7 +17,7 @@ export default function AboutPage() {
       <div className="page-shell py-14">
         <section className="grid gap-10 lg:grid-cols-2">
           <div><p className="eyebrow">Why Echo exists</p><h2 className="mt-4 font-display text-5xl font-semibold">OCD is not a personality trait or a passing habit.</h2></div>
-          <div className="space-y-5 text-lg leading-8 text-ink/65"><p>It is a serious condition that can affect people across the world and deserves more attention, honest discussion, and accurate representation.</p><p>This student-led project brings education, practical support, reflection, and community into one welcoming space. Today’s content focuses on OCD; the wider vision includes responsibly reviewed education for other mental health conditions.</p><p>We believe knowledge can be one meaningful step in recovery—but knowledge is not a substitute for personalized professional care.</p></div>
+          <div className="space-y-5 text-lg leading-8 text-ink/65"><p>Mental health conditions can affect people across the world and deserve more attention, honest discussion, and accurate representation.</p><p>This student-led project brings condition-aware education, practical support, reflection, and community into one welcoming space. The quiz helps each person find information and activities relevant to the conditions they select.</p><p>We believe knowledge can be one meaningful step in recovery—but knowledge is not a substitute for personalized professional care.</p></div>
         </section>
 
         <section className="section-space">
