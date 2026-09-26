@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type MouseEvent } from "react";
-import { ArrowRight, BookOpen, CheckCircle2, CircleHelp, Heart, ShieldCheck, Siren, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle2, CircleHelp, ShieldCheck, Siren } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { categoryMeta, solutions, type Category } from "@/lib/solutions";
-import { testimonials } from "@/lib/testimonials";
 import { useApp, type QuizData } from "@/components/app-provider";
 import { conditionProfiles, normalizeConditionIds } from "@/lib/conditions";
 
@@ -40,49 +39,51 @@ export function HomeContent() {
 
   return (
     <div className="overflow-hidden">
-      <section className="page-shell relative grid min-h-[680px] items-center gap-12 py-16 lg:grid-cols-[1.05fr_.95fr] lg:py-24">
-        <div className="relative z-10">
-          <p className="eyebrow mb-5">👋 You are not your thoughts</p>
-          <h1 className="max-w-3xl font-display text-6xl font-semibold leading-[.95] tracking-[-.04em] text-ink sm:text-7xl lg:text-[5.5rem]">
-            Make room for what you <span className="relative inline-block text-terracotta">really feel.
-              <svg className="absolute -bottom-3 left-0 w-full text-ochre" viewBox="0 0 300 18" fill="none" aria-hidden>
-                <path d="M3 12C69 3 151 4 297 9" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-              </svg>
-            </span>
-          </h1>
-          <p className="mt-10 max-w-xl text-lg leading-8 text-ink/65">
-            {hasQuiz
-              ? `Find a direct next step for ${focusText}, explore the rest of Echo, and keep a private record of what helps—without judgment.`
-              : "Learn how Echo works, complete the short quiz, and get a private starting point tailored to your answers."}
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" className="h-13 rounded-full bg-terracotta px-7 text-base text-white hover:bg-ink">
-              <Link href="/quiz">Start with the quiz <ArrowRight /></Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="h-13 rounded-full border-ink/20 bg-white/70 px-7 text-base">
-              <Link href="/learn">Understand your conditions</Link>
-            </Button>
-            {hasQuiz && (
-              <Button asChild variant="outline" size="lg" className="h-13 rounded-full border-ink/20 bg-white/70 px-7 text-base">
-                <Link href="/what-is-ocd">Understand your conditions</Link>
-              </Button>
-            )}
+      <section className="page-shell py-8 sm:py-12">
+        <div className="grid overflow-hidden rounded-[2rem] border border-ink/10 bg-cream shadow-[0_18px_50px_rgba(41,50,45,.08)] lg:grid-cols-[1.25fr_.75fr]">
+          <div className="flex flex-col justify-between p-8 sm:p-12 lg:p-16">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[.22em] text-terracotta">Say what’s on your mind</p>
+              <h1 className="mt-5 max-w-xl font-display text-5xl font-semibold leading-[.95] tracking-[-.045em] text-ink sm:text-6xl lg:text-7xl">
+                Say it,<br />
+                <span className="text-terracotta">hear it back.</span>
+              </h1>
+              <p className="mt-6 max-w-md text-lg leading-8 text-ink/65">
+                {hasQuiz
+                  ? `You told Echo about ${focusText}. Hear one private next step back.`
+                  : "Name the moment. Echo answers with one private next step."}
+              </p>
+            </div>
+            <div className="mt-10">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                {hasQuiz ? (
+                  <>
+                    <Button asChild size="lg" className="h-13 rounded-full bg-terracotta px-7 text-base text-white hover:bg-ink">
+                      <Link href={emergencyHref} onClick={openRandomActivity}><Siren className="size-5" /> I Need Help Now <ArrowRight /></Link>
+                    </Button>
+                    <Button asChild variant="outline" size="lg" className="h-13 rounded-full border-ink/15 bg-white px-7 text-base">
+                      <Link href="/what-is-ocd">Understand your conditions</Link>
+                    </Button>
+                  </>
+                ) : (
+                  <Button asChild size="lg" className="h-13 rounded-full bg-ink px-7 text-base text-white hover:bg-terracotta">
+                    <Link href="/quiz">Start with the quiz <ArrowRight /></Link>
+                  </Button>
+                )}
+              </div>
+              <p className="mt-5 flex items-center gap-2 text-sm text-ink/50">
+                <ShieldCheck className="size-4 text-sage" /> Kept on this device. Never a diagnosis.
+              </p>
+            </div>
           </div>
-          <p className="mt-6 flex items-center gap-2 text-sm text-ink/55">
-            <ShieldCheck className="size-4 text-sage" /> Private by default. Educational, never diagnostic.
-          </p>
-        </div>
-        <div className="relative mx-auto aspect-square w-full max-w-[520px]">
-          <div className="absolute inset-[8%] rounded-[48%_52%_46%_54%] bg-sage-light" />
-          <div className="absolute inset-[18%] rotate-6 rounded-[42%_58%_55%_45%] bg-terracotta-light" />
-          <div className="absolute left-[18%] top-[17%] w-[64%] -rotate-3 rounded-[2.5rem] border border-white/70 bg-paper p-7 shadow-[0_24px_80px_rgba(41,50,45,.14)] sm:p-9">
-            <span className="mb-6 grid size-12 place-items-center rounded-2xl bg-ochre-light text-2xl">💬</span>
-            <p className="font-display text-3xl font-semibold leading-tight sm:text-4xl">“A thought can feel loud without being a command.”</p>
-            <div className="mt-8 h-2 w-full overflow-hidden rounded-full bg-cream"><div className="h-full w-2/3 rounded-full bg-terracotta" /></div>
-            <p className="mt-3 text-xs font-bold uppercase tracking-widest text-ink/45">A small reminder from Echo</p>
-          </div>
-          <Sparkles className="absolute right-[4%] top-[9%] size-12 text-ochre" />
-          <Heart className="absolute bottom-[9%] left-[6%] size-14 -rotate-12 fill-terracotta-light text-terracotta" />
+          <a href="https://www.who.int/news-room/fact-sheets/detail/mental-disorders" target="_blank" rel="noreferrer" className="group flex flex-col justify-between bg-terracotta p-8 text-cream sm:p-12">
+            <p className="text-xs font-bold uppercase tracking-[.22em] text-cream/75">World Health Organization</p>
+            <div className="mt-16 lg:mt-0">
+              <p className="font-display text-7xl font-semibold leading-none tracking-[-.05em] sm:text-8xl">1 in 8</p>
+              <p className="mt-5 max-w-xs text-lg leading-8 text-cream/80">people in the world live with a mental disorder.</p>
+            </div>
+            <span className="mt-10 inline-flex items-center gap-2 text-sm font-bold">Read the estimate <ArrowRight className="size-4 transition group-hover:translate-x-1" /></span>
+          </a>
         </div>
       </section>
 
@@ -93,7 +94,7 @@ export function HomeContent() {
             <h2 className="mt-3 font-display text-4xl font-semibold">A clearer starting point for {selectedNames}</h2>
             <div className="mt-7 grid gap-4 md:grid-cols-2">
               {selectedProfiles.map((profile) => (
-                <Link key={profile.id} href={`/learn?condition=${profile.id}`} className="rounded-2xl bg-paper p-6 transition hover:-translate-y-1 hover:shadow-lg">
+                <Link key={profile.id} href={`/what-is-ocd#${profile.id}`} className="rounded-2xl bg-paper p-6 transition hover:-translate-y-1 hover:shadow-lg">
                   <h3 className="font-display text-2xl font-semibold">{profile.label}</h3>
                   <p className="mt-3 text-sm leading-6 text-ink/65">{profile.summary}</p>
                   <span className="mt-5 flex items-center gap-2 text-sm font-bold text-terracotta">Read about {profile.label} <ArrowRight className="size-4" /></span>
@@ -112,7 +113,7 @@ export function HomeContent() {
               ["02", "Answer a few questions", "The quiz helps Echo understand which broad activity categories may fit you. It is not a diagnosis."],
               ["03", "Choose your next step", "After the quiz, the homepage can take you directly to a randomly selected activity whenever you need one."],
             ].map(([number, title, text]) => (
-              <article key={number} className={`rounded-[1.75rem] p-7 ${number === "01" ? "bg-sage-light" : number === "02" ? "bg-ochre-light" : "bg-pink-soft"}`}>
+              <article key={number} className={`rounded-[1.75rem] p-7 ${number === "01" ? "bg-blue-soft" : number === "02" ? "bg-ochre-light" : "bg-pink-soft"}`}>
                 <span className="font-display text-4xl text-ink/25">{number}</span>
                 <h2 className="mt-8 font-display text-2xl font-semibold">{title}</h2>
                 <p className="mt-4 leading-7 text-ink/65">{text}</p>
@@ -227,21 +228,6 @@ export function HomeContent() {
               </AccordionItem>
             ))}
           </Accordion>
-        </div>
-      </section>
-
-      <section className="section-space page-shell">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div><p className="eyebrow">⭐ Public profiles</p><h2 className="mt-3 font-display text-5xl font-semibold">Speaking openly matters.</h2></div>
-          <Button asChild variant="outline" className="rounded-full bg-transparent"><Link href="/testimonials">See all profiles <ArrowRight /></Link></Button>
-        </div>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {testimonials.filter((item) => item.featured).map((person) => (
-            <article key={person.id} className="overflow-hidden rounded-[1.75rem] bg-paper shadow-sm">
-              <div className={`grid aspect-[4/3] place-items-center ${person.color}`}><span className="font-display text-6xl font-semibold text-ink/50">{person.initials}</span></div>
-              <div className="p-6"><p className="text-xs font-bold uppercase tracking-widest text-terracotta">Public profile</p><h3 className="mt-2 font-display text-2xl font-semibold">{person.displayName}</h3><p className="mt-3 line-clamp-2 text-sm leading-6 text-ink/60">{person.bio}</p></div>
-            </article>
-          ))}
         </div>
       </section>
 
