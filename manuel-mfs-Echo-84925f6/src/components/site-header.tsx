@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { type MouseEvent, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LogoMark } from "@/components/logo-mark";
 import { useApp } from "@/components/app-provider";
+import { pickRandomSolution } from "@/lib/solutions";
 
 const links = [
   { href: "/learn", label: "Learn" },
@@ -20,10 +21,17 @@ const links = [
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const { quiz } = useApp();
   const [open, setOpen] = useState(false);
   const hasQuiz = Boolean(quiz?.conditions?.length);
   const visibleLinks = hasQuiz ? links : [];
+
+  function openRandomActivity(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    setOpen(false);
+    router.push(`/solutions/${pickRandomSolution().id}`);
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-ink/10 bg-cream">
@@ -57,16 +65,26 @@ export function SiteHeader() {
         <div className="hidden items-center gap-2 lg:flex">
           <Link
             href="/quiz"
-            className="inline-flex h-9 items-center justify-center rounded-full px-4 text-sm font-medium text-ink transition-colors hover:bg-muted"
+            className="inline-flex h-9 items-center justify-center rounded-full border border-ink/15 bg-white px-4 text-sm font-medium text-ink transition-colors hover:bg-cream"
           >
-            Take the quiz
+            Redo the quiz
           </Link>
-          <Link
-            href="/help-now"
-            className="inline-flex h-9 items-center justify-center rounded-full bg-ink px-4 text-sm font-medium text-white transition-colors hover:bg-terracotta"
-          >
-            I need help now
-          </Link>
+          {hasQuiz ? (
+            <Link
+              href="/solutions"
+              onClick={openRandomActivity}
+              className="inline-flex h-9 items-center justify-center rounded-full bg-terracotta px-4 text-sm font-medium text-cream transition-colors hover:bg-ink"
+            >
+              I Need Help Now
+            </Link>
+          ) : (
+            <Link
+              href="/quiz"
+              className="inline-flex h-9 items-center justify-center rounded-full bg-terracotta px-4 text-sm font-medium text-cream transition-colors hover:bg-ink"
+            >
+              Take the quiz
+            </Link>
+          )}
         </div>
 
         <button
@@ -93,13 +111,19 @@ export function SiteHeader() {
                 {link.label}
               </Link>
             ))}
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              <Button asChild variant="outline" className="rounded-full bg-white">
-                <Link href="/quiz" onClick={() => setOpen(false)}>Take the quiz</Link>
+            <div className="mt-3 grid gap-2">
+              <Button asChild variant="outline" className="w-full rounded-full bg-white">
+                <Link href="/quiz" onClick={() => setOpen(false)}>Redo the quiz</Link>
               </Button>
-              <Button asChild className="rounded-full bg-ink text-white">
-                <Link href="/help-now" onClick={() => setOpen(false)}>Help now</Link>
-              </Button>
+              {hasQuiz ? (
+                <Button asChild className="w-full rounded-full bg-terracotta text-cream hover:bg-ink">
+                  <Link href="/solutions" onClick={openRandomActivity}>I Need Help Now</Link>
+                </Button>
+              ) : (
+                <Button asChild className="w-full rounded-full bg-terracotta text-cream hover:bg-ink">
+                  <Link href="/quiz" onClick={() => setOpen(false)}>Take the quiz</Link>
+                </Button>
+              )}
             </div>
           </div>
         </nav>
