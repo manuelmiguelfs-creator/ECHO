@@ -8,18 +8,25 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useApp } from "@/components/app-provider";
 import { categoryMeta, recommendationFor, solutions, type Category } from "@/lib/solutions";
+import { conditionProfiles, normalizeConditionIds } from "@/lib/conditions";
 
 export default function HelpNowPage() {
-  const { scores } = useApp();
+  const { scores, quiz } = useApp();
+  const selectedIds = normalizeConditionIds(quiz?.conditions);
+  const selectedProfiles = conditionProfiles.filter((profile) => selectedIds.includes(profile.id));
+  const suggestedCategories = [...new Set(selectedProfiles.flatMap((profile) => profile.suggestedCategories))] as Category[];
   const [randomId, setRandomId] = useState<string | null>(null);
   const random = solutions.find((solution) => solution.id === randomId);
 
   function chooseRandom() {
     let pool = solutions;
+    if (suggestedCategories.length) {
+      pool = solutions.filter((solution) => suggestedCategories.includes(solution.category));
+    }
     if (scores) {
       const best = (Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0] as Category);
-      const preferred = solutions.filter((solution) => solution.category === best);
-      if (Math.random() < 0.7) pool = preferred;
+      const preferred = pool.filter((solution) => solution.category === best);
+      if (preferred.length && Math.random() < 0.7) pool = preferred;
     }
     setRandomId(pool[Math.floor(Math.random() * pool.length)].id);
   }
@@ -29,13 +36,15 @@ export default function HelpNowPage() {
       <PageHero
         eyebrow="A calmer next step"
         title="Let’s start by choosing a challenge."
-        description="Pick any activity below or let Echo choose one. Recommendations are only a guide based on your quiz—not a clinical judgment."
+        description="Pick any activity below or let Echo choose one. Suggestions can reflect your selected conditions, but they are not a clinical judgment."
         tone="pink"
       />
       <div className="page-shell py-12">
         <div className="grid gap-5 lg:grid-cols-[1fr_auto]">
           <div className="rounded-2xl bg-paper p-6">
-            {scores ? (
+            {selectedProfiles.length ? (
+              <><p className="font-semibold">Support suggestions for {selectedProfiles.map((profile) => profile.label).join(", ")}.</p><p className="mt-2 text-sm leading-6 text-ink/60">Echo will highlight {suggestedCategories.map((category) => categoryMeta[category].label.toLowerCase()).join(" and ")} activities while keeping every activity available to you.</p><Link href="/what-is-ocd" className="mt-3 inline-block text-sm font-bold text-terracotta">Read about your conditions →</Link></>
+            ) : scores ? (
               <><p className="font-semibold">Your recommendations are active.</p><p className="mt-2 text-sm leading-6 text-ink/60">The Recommendation label uses the score for each activity’s category. You can update or repeat the quiz at any time and still choose any activity.</p><Link href="/quiz" className="mt-3 inline-block text-sm font-bold text-terracotta">Update quiz answers →</Link></>
             ) : (
               <><p className="font-semibold">Personalize this list.</p><p className="mt-2 text-sm leading-6 text-ink/60">The short quiz helps identify which broad categories have worked best for you before.</p><Button asChild variant="outline" className="mt-4 rounded-full bg-white"><Link href="/quiz">Take the quiz</Link></Button></>

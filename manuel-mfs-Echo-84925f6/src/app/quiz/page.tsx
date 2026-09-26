@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, RotateCcw } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useApp } from "@/components/app-provider";
+import { conditionProfiles } from "@/lib/conditions";
 import { categoryMeta, type Category, recommendationFor } from "@/lib/solutions";
 
 const options = [
@@ -20,17 +21,40 @@ const options = [
 export default function QuizPage() {
   const { quiz, setQuiz } = useApp();
   const [saved, setSaved] = useState(false);
+  const [conditionError, setConditionError] = useState("");
   const [form, setForm] = useState({
     fullName: quiz?.fullName ?? "",
-    yearsWithOCD: quiz?.yearsWithOCD ?? "",
-    compulsionDuration: quiz?.compulsionDuration ?? "",
+    conditions: quiz?.conditions ?? [],
+    symptomsDuration: quiz?.symptomsDuration ?? "",
+    attackDuration: quiz?.attackDuration ?? "",
     outsideScore: quiz?.outsideScore ?? 2,
     insideScore: quiz?.insideScore ?? 0,
     mentalScore: quiz?.mentalScore ?? 3,
   });
 
+  useEffect(() => {
+    if (quiz && !saved) {
+      queueMicrotask(() =>
+        setForm({
+          fullName: quiz.fullName,
+          conditions: quiz.conditions,
+          symptomsDuration: quiz.symptomsDuration,
+          attackDuration: quiz.attackDuration,
+          outsideScore: quiz.outsideScore,
+          insideScore: quiz.insideScore,
+          mentalScore: quiz.mentalScore,
+        }),
+      );
+    }
+  }, [quiz, saved]);
+
   function submit(event: FormEvent) {
     event.preventDefault();
+    if (form.conditions.length === 0) {
+      setConditionError("Select at least one condition.");
+      return;
+    }
+    setConditionError("");
     setQuiz({ ...form, updatedAt: new Date().toISOString() });
     setSaved(true);
   }
@@ -49,7 +73,7 @@ export default function QuizPage() {
       <PageHero
         eyebrow="🔎 Personalization"
         title="Who are you?"
-        description="Answer a few questions about OCD support activities and how they work for you. This is not a diagnostic or clinical assessment."
+        description="Answer a few questions about your condition, symptoms, and support activities. This is not a diagnostic or clinical assessment."
         tone="ochre"
       />
       <div className="page-shell grid gap-10 py-14 lg:grid-cols-[1.1fr_.9fr]">
@@ -58,11 +82,39 @@ export default function QuizPage() {
             <Field label="Full name" className="sm:col-span-2">
               <Input required value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} placeholder="Your name" className="h-12 bg-white" />
             </Field>
-            <Field label="How long have you felt OCD symptoms? (years)">
-              <Input required min="0" step="0.5" type="number" value={form.yearsWithOCD} onChange={(e) => setForm({ ...form, yearsWithOCD: e.target.value })} className="h-12 bg-white" />
+            <Field label="What conditions apply to you?">
+              <div className="grid gap-2 rounded-xl border border-ink/10 bg-white p-3 sm:grid-cols-2">
+                {conditionProfiles.map((condition) => {
+                  const checked = form.conditions.includes(condition.id);
+                  return (
+                    <label key={condition.id} className={`flex cursor-pointer items-center gap-3 rounded-lg p-3 text-sm transition ${checked ? "bg-terracotta-light/50" : "hover:bg-cream"}`}>
+                      <input
+                        className="size-4 accent-terracotta"
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() =>
+                          (() => {
+                            const conditions = checked
+                              ? form.conditions.filter((id) => id !== condition.id)
+                              : [...form.conditions, condition.id];
+                            setConditionError("");
+                            setForm({ ...form, conditions });
+                          })()
+                        }
+                      />
+                      {condition.label}
+                    </label>
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-xs text-ink/55">Select all that apply. This helps Echo personalize educational content and support suggestions.</p>
+              {conditionError && <p className="mt-2 text-sm font-semibold text-red-700">{conditionError}</p>}
             </Field>
-            <Field label="How long does a given compulsion last? (minutes)">
-              <Input required min="0" type="number" value={form.compulsionDuration} onChange={(e) => setForm({ ...form, compulsionDuration: e.target.value })} className="h-12 bg-white" />
+            <Field label="How long have you had these symptoms? (years)">
+              <Input required min="0" step="0.5" type="number" value={form.symptomsDuration} onChange={(e) => setForm({ ...form, symptomsDuration: e.target.value })} className="h-12 bg-white" />
+            </Field>
+            <Field label="How long does an attack last? (minutes)">
+              <Input required min="0" type="number" value={form.attackDuration} onChange={(e) => setForm({ ...form, attackDuration: e.target.value })} className="h-12 bg-white" />
             </Field>
           </div>
           <div className="mt-8 space-y-7 border-t border-ink/10 pt-8">
@@ -85,7 +137,7 @@ export default function QuizPage() {
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button type="submit" className="h-12 rounded-full bg-terracotta px-7 text-white">{quiz ? "Update my answers" : "See my recommendations"} <ArrowRight /></Button>
-            <Button type="button" variant="ghost" className="h-12 rounded-full" onClick={() => setForm({ fullName: "", yearsWithOCD: "", compulsionDuration: "", outsideScore: 0, insideScore: 0, mentalScore: 0 })}><RotateCcw /> Reset</Button>
+            <Button type="button" variant="ghost" className="h-12 rounded-full" onClick={() => setForm({ fullName: "", conditions: [], symptomsDuration: "", attackDuration: "", outsideScore: 0, insideScore: 0, mentalScore: 0 })}><RotateCcw /> Reset</Button>
           </div>
           {saved && <p role="status" className="mt-4 flex items-center gap-2 text-sm font-semibold text-green-800"><Check className="size-4" /> Your answers were saved on this device.</p>}
         </form>

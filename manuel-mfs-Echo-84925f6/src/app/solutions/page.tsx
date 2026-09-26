@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useApp } from "@/components/app-provider";
 import { categoryMeta, recommendationFor, solutions, type Category } from "@/lib/solutions";
+import { conditionProfiles, normalizeConditionIds } from "@/lib/conditions";
 
 export default function SolutionsPage() {
   const params = useSearchParams();
@@ -18,7 +19,10 @@ export default function SolutionsPage() {
     initial === "Outside" || initial === "Inside" || initial === "Mental" ? initial : "All",
   );
   const [search, setSearch] = useState("");
-  const { scores, completedSolutions } = useApp();
+  const { scores, completedSolutions, quiz } = useApp();
+  const selectedIds = normalizeConditionIds(quiz?.conditions);
+  const selectedProfiles = conditionProfiles.filter((profile) => selectedIds.includes(profile.id));
+  const suggestedCategories = [...new Set(selectedProfiles.flatMap((profile) => profile.suggestedCategories))] as Category[];
 
   const filtered = useMemo(
     () =>
@@ -35,7 +39,9 @@ export default function SolutionsPage() {
       <PageHero
         eyebrow="💡 Practical support"
         title="Solution Library"
-        description="Explore 22 activities for difficult moments. These are optional support strategies—not medical treatment—and you can stop any activity at any time."
+        description={selectedProfiles.length
+          ? `Explore activities that may fit moments related to ${selectedProfiles.map((profile) => profile.label).join(", ")}. These are optional support strategies—not medical treatment.`
+          : "Explore 22 activities for difficult moments. These are optional support strategies—not medical treatment—and you can stop any activity at any time."}
         tone="sage"
       />
       <div className="page-shell py-12">
@@ -57,6 +63,11 @@ export default function SolutionsPage() {
           <p className="text-sm text-ink/55">{filtered.length} {filtered.length === 1 ? "activity" : "activities"}</p>
           {!scores && <Link href="/quiz" className="text-sm font-semibold text-terracotta hover:underline">Take the quiz to personalize →</Link>}
         </div>
+        {selectedProfiles.length > 0 && (
+          <p className="mt-4 rounded-2xl bg-blue-soft p-4 text-sm leading-6 text-ink/70">
+            Based on your selections, Echo suggests exploring {suggestedCategories.map((category) => categoryMeta[category].label.toLowerCase()).join(" and ")} activities first. You can always choose any activity.
+          </p>
+        )}
 
         {filtered.length ? (
           <div className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -71,7 +82,7 @@ export default function SolutionsPage() {
                 <p className="mt-3 line-clamp-2 text-sm leading-6 text-ink/60">{solution.description}</p>
                 <div className="mt-auto flex items-center justify-between pt-6">
                   <span className="flex items-center gap-1.5 text-xs font-semibold text-ink/50"><Timer className="size-4" /> {solution.duration}</span>
-                  <span className="text-xs text-ink/50">{recommendationFor(scores?.[solution.category])}</span>
+                  <span className="text-xs text-ink/50">{suggestedCategories.includes(solution.category) && selectedProfiles.length ? "Suggested for you" : recommendationFor(scores?.[solution.category])}</span>
                 </div>
                 <Button asChild variant="outline" className="mt-4 h-11 w-full rounded-full bg-transparent group-hover:border-ink">
                   <Link href={`/solutions/${solution.id}`}>Open activity <ArrowRight /></Link>

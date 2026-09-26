@@ -1,9 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, BookOpen, CheckCircle2, CircleHelp, Heart, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { categoryMeta } from "@/lib/solutions";
 import { testimonials } from "@/lib/testimonials";
+import { useApp } from "@/components/app-provider";
+import { conditionProfiles, normalizeConditionIds } from "@/lib/conditions";
 
 const faqs = [
   ["How can I help your community?", "Submit a personal strategy through our community page. Every contribution is reviewed before it can appear publicly."],
@@ -15,6 +19,12 @@ const faqs = [
 ];
 
 export function HomeContent() {
+  const { quiz } = useApp();
+  const selectedIds = normalizeConditionIds(quiz?.conditions);
+  const selectedProfiles = conditionProfiles.filter((profile) => selectedIds.includes(profile.id));
+  const selectedNames = selectedProfiles.map((profile) => profile.label).join(", ");
+  const focusText = selectedNames || "your selected conditions";
+
   return (
     <div className="overflow-hidden">
       <section className="page-shell relative grid min-h-[680px] items-center gap-12 py-16 lg:grid-cols-[1.05fr_.95fr] lg:py-24">
@@ -28,14 +38,14 @@ export function HomeContent() {
             </span>
           </h1>
           <p className="mt-10 max-w-xl text-lg leading-8 text-ink/65">
-            Understand OCD, find practical support for difficult moments, and keep a private record of what helps—without judgment.
+            Understand {focusText}, find practical support for difficult moments, and keep a private record of what helps—without judgment.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-13 rounded-full bg-terracotta px-7 text-base text-white hover:bg-ink">
               <Link href="/quiz">Start with the quiz <ArrowRight /></Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="h-13 rounded-full border-ink/20 bg-white/70 px-7 text-base">
-              <Link href="/what-is-ocd">Understand OCD</Link>
+              <Link href="/what-is-ocd">Understand your conditions</Link>
             </Button>
           </div>
           <p className="mt-6 flex items-center gap-2 text-sm text-ink/55">
@@ -55,6 +65,24 @@ export function HomeContent() {
           <Heart className="absolute bottom-[9%] left-[6%] size-14 -rotate-12 fill-terracotta-light text-terracotta" />
         </div>
       </section>
+
+      {selectedProfiles.length > 0 && (
+        <section className="page-shell pb-10">
+          <div className="rounded-[2rem] bg-blue-soft p-7 sm:p-10">
+            <p className="eyebrow">Personalized for you</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold">A clearer starting point for {selectedNames}</h2>
+            <div className="mt-7 grid gap-4 md:grid-cols-2">
+              {selectedProfiles.map((profile) => (
+                <Link key={profile.id} href={`/what-is-ocd#${profile.id}`} className="rounded-2xl bg-paper p-6 transition hover:-translate-y-1 hover:shadow-lg">
+                  <h3 className="font-display text-2xl font-semibold">{profile.label}</h3>
+                  <p className="mt-3 text-sm leading-6 text-ink/65">{profile.summary}</p>
+                  <span className="mt-5 flex items-center gap-2 text-sm font-bold text-terracotta">Read about {profile.label} <ArrowRight className="size-4" /></span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="page-shell pb-10">
         <div className="grid overflow-hidden rounded-[2rem] bg-ink text-white md:grid-cols-[1fr_auto]">
@@ -77,8 +105,8 @@ export function HomeContent() {
             <Button asChild variant="outline" className="mt-8 rounded-full bg-transparent"><Link href="/about">More about us <ArrowRight /></Link></Button>
           </div>
           <div className="grid gap-5 text-lg leading-8 text-ink/70 sm:grid-cols-2">
-            <p>Echo challenges the idea that OCD is simply liking things clean or organized. It can be a serious, debilitating cycle of intrusive obsessions and repetitive compulsions.</p>
-            <p>We bring together clear education, practical support, and a responsibly moderated community so people can feel seen, informed, and less alone.</p>
+            <p>Echo challenges stigma and oversimplification around mental health conditions. Every person deserves clear information, practical support, and room to be understood without judgment.</p>
+            <p>We bring together condition-aware education, practical support, and a responsibly moderated community so people can feel seen, informed, and less alone.</p>
           </div>
         </div>
       </section>
@@ -91,9 +119,9 @@ export function HomeContent() {
           </div>
           <div className="grid gap-5 lg:grid-cols-3">
             {[
-              ["01", "Name the pattern, not yourself", "OCD can produce powerful thoughts, feelings, and urges. A qualified professional can help you understand uncertain symptoms without turning the search for certainty into another compulsion."],
-              ["02", "Short relief can keep the cycle going", "Compulsions may reduce anxiety briefly while strengthening the cycle over time. With professional guidance, tolerating manageable uncertainty may help loosen that pattern."],
-              ["03", "Expect the unexpected", "Old or new intrusive thoughts can appear at any time. Their return does not mean you failed, and a thought does not define your values or intentions."],
+              ["01", "Name the pattern, not yourself", "Mental health symptoms can produce powerful thoughts, feelings, and urges. A qualified professional can help you understand them without reducing you to a label."],
+              ["02", "Support can be practical and personal", "Small activities may help someone get through a difficult moment, but there is no single strategy that works for everyone."],
+              ["03", "Expect the unexpected", "Symptoms and emotions can change over time. A difficult moment does not define your values, identity, or future."],
             ].map(([number, title, text], index) => (
               <article key={number} className={`rounded-[1.75rem] p-7 ${index === 0 ? "bg-sage-light" : index === 1 ? "bg-ochre-light" : "bg-pink-soft"}`}>
                 <span className="font-display text-4xl text-ink/25">{number}</span>
@@ -129,7 +157,7 @@ export function HomeContent() {
           <div className="absolute -right-20 -top-28 size-80 rounded-full border-[45px] border-white/10" />
           <div className="relative grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[.18em] text-white/65">🔄 Community solutions for OCD</p>
+              <p className="text-sm font-bold uppercase tracking-[.18em] text-white/65">🔄 Community solutions for mental health</p>
               <h2 className="mt-4 max-w-2xl font-display text-4xl font-semibold sm:text-5xl">What helped you might help someone else.</h2>
               <div className="mt-7 grid gap-3 text-white/80 sm:grid-cols-3"><span>Share real-life strategies.</span><span>Discover community ideas.</span><span>Reviewed before publishing.</span></div>
             </div>
