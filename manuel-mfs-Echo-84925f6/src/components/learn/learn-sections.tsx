@@ -167,7 +167,7 @@ export function TestimonialsSection({ entry }: { entry: LearnEntry }) {
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {entry.testimonials.map((person) => (
           <article key={person.name} className="flex flex-col overflow-hidden rounded-[1.75rem] bg-paper shadow-sm">
-            <PersonPhoto src={person.photo.src} name={person.name} className="aspect-[4/3] w-full" />
+            <PersonPhoto src={person.photo.src} name={person.name} className="aspect-square w-full" />
             <div className="flex flex-1 flex-col p-6">
               <p className="text-xs font-bold uppercase tracking-widest text-terracotta">{person.knownFor}</p>
               <h3 className="mt-2 font-display text-2xl font-semibold">{person.name}</h3>

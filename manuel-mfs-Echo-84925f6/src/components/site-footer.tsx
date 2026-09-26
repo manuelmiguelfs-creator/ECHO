@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { HeartHandshake } from "lucide-react";
 import { useApp } from "@/components/app-provider";
+import { LogoMark } from "@/components/logo-mark";
+import { formatConditionList, selectedConditionProfiles } from "@/lib/conditions";
 
 const footerLinks = [
   ["/learn", "Learn"],
@@ -15,21 +16,23 @@ const footerLinks = [
 
 export function SiteFooter() {
   const { quiz } = useApp();
-  const hasQuiz = Boolean(quiz?.conditions?.length);
+  const labels = selectedConditionProfiles(quiz?.conditions).map((profile) => profile.label);
+  const hasQuiz = labels.length > 0;
   const visibleLinks = hasQuiz ? footerLinks : [["/quiz", "Take the Quiz"]];
+  const list = formatConditionList(labels);
 
   return (
     <footer className="mt-auto bg-ink text-cream">
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-14 md:grid-cols-[1fr_auto] lg:px-8">
         <div className="max-w-lg">
           <div className="mb-5 flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-full bg-terracotta">
-              <HeartHandshake className="size-5" aria-hidden />
-            </span>
+            <LogoMark className="size-11 shrink-0" />
             <span className="font-display text-3xl font-semibold">Echo</span>
           </div>
           <p className="text-cream/70">
-            A private space for learning how Echo works and finding a next step that feels manageable.
+            {hasQuiz
+              ? `A private space for learning about ${list} and finding a next step that feels manageable.`
+              : "A private space for learning how Echo works and finding a next step that feels manageable."}
           </p>
           <p className="mt-5 text-xs leading-relaxed text-cream/50">
             Echo is educational and supportive. It does not diagnose, provide treatment, or replace

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useApp } from "@/components/app-provider";
 import { categoryMeta, recommendationFor, solutions, type Category } from "@/lib/solutions";
-import { conditionProfiles, normalizeConditionIds } from "@/lib/conditions";
+import { conditionProfiles, formatConditionList, normalizeConditionIds } from "@/lib/conditions";
 
 export default function SolutionsPage() {
   const params = useSearchParams();
@@ -40,7 +40,7 @@ export default function SolutionsPage() {
         eyebrow="💡 Practical support"
         title="Solution Library"
         description={selectedProfiles.length
-          ? `Explore activities that may fit moments related to ${selectedProfiles.map((profile) => profile.label).join(", ")}. These are optional support strategies—not medical treatment.`
+          ? `Explore activities that may fit moments related to ${formatConditionList(selectedProfiles.map((profile) => profile.label))}. These are optional support strategies—not medical treatment.`
           : "Explore 22 activities for difficult moments. These are optional support strategies—not medical treatment—and you can stop any activity at any time."}
         tone="sage"
       />

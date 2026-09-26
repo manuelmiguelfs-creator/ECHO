@@ -20,14 +20,16 @@ export function PersonPhoto({ src, name, className }: { src: string; name: strin
   }
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- Wikimedia redirects to its own CDN, which next/image cannot follow reliably.
-    <img
-      src={src}
-      alt={`Portrait of ${name}`}
-      loading="lazy"
-      referrerPolicy="no-referrer"
-      onError={() => setFailed(true)}
-      className={`object-cover object-top ${className}`}
-    />
+    <div className={`relative overflow-hidden bg-cream ${className}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element -- Wikimedia redirects to its own CDN, which next/image cannot follow reliably. */}
+      <img
+        src={src}
+        alt={`Portrait of ${name}`}
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        onError={() => setFailed(true)}
+        className="absolute inset-0 size-full object-cover object-[center_22%]"
+      />
+    </div>
   );
 }

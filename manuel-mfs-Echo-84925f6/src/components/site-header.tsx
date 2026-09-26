@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { HeartHandshake, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LogoMark } from "@/components/logo-mark";
 import { useApp } from "@/components/app-provider";
 
 const links = [
@@ -27,9 +28,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-ink/10 bg-cream">
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-5 lg:px-8">
         <Link href="/" className="group flex items-center gap-3" onClick={() => setOpen(false)}>
-          <span className="grid size-9 place-items-center rounded-full bg-terracotta text-cream shadow-sm transition-transform group-hover:rotate-6">
-            <HeartHandshake className="size-5" aria-hidden />
-          </span>
+          <LogoMark className="size-11 shrink-0 drop-shadow-sm transition-transform group-hover:rotate-3" />
           <span>
             <span className="block font-display text-2xl font-semibold leading-none text-ink">Echo</span>
             <span className="block text-[10px] font-bold uppercase tracking-[.18em] text-ink/55">

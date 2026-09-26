@@ -296,7 +296,7 @@ export const solutions: Solution[] = [
     description: "Create a small moment of ordinary connection.",
     instructions: [
       "Message a trusted friend with a silly question, meme, or absurd observation.",
-      "Keep the message unrelated to OCD.",
+      "Keep the message light, and leave symptoms out of it.",
       "Respect their boundaries and do not worry about an immediate reply.",
     ],
   },
